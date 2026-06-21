@@ -11,163 +11,227 @@ import useAuthStore from '../store/authStore';
 import { addComment } from '../services/commentService';
 
 interface UserData {
-    Username: string
-    ProfilePicture: string
+  Username: string;
+  ProfilePicture: string;
 }
 
 interface PostDetail {
-    user: UserData
-    post: PostData
-    comments: PostCommentData[]
+  user: UserData;
+  post: PostData;
+  comments: PostCommentData[];
 }
 
 interface CommentAddData {
-    user_id: number | null
-    parent_id: number | null
-    post_id: number
-    content: string
+  user_id: number | null;
+  parent_id: number | null;
+  post_id: number | string;
+  content: string;
 }
 
 const Post: React.FC = () => {
-
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const user = useAuthStore((state) => state.user);
-    const [postData, setPostData] = useState<PostDetail>();
-    const [comment, setComment] = useState<CommentAddData>({
-        user_id: Number(user?.id),
-        post_id: postData?.post.ID,
-        parent_id: null,
-        content: "",
-    });
-    const [isFocused, setIsFocused] = useState<boolean>(false);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const { data } = await getPostDetail(Number(id));
-            setPostData(data);
-        };
-        fetchData();
-    }, [id]);
-
-    const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value }= e.target;
-        setComment((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleAddComment = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await addComment(comment);
-    };
-
-    const getTimeAgo = (date: Date): string => {
-        const now = new Date();
-        const targetDate = new Date(date);
-        const diff = now.getTime() - targetDate.getTime();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   
-        const seconds = Math.floor(diff / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        const weeks = Math.floor(days / 7);
-        const months = Math.floor(days / 30);
-        const years = Math.floor(days / 365);
-    
-        if (years > 0) return `${years} tahun yang lalu`;
-        if (months > 0) return `${months} bulan yang lalu`;
-        if (weeks > 0) return `${weeks} minggu yang lalu`;
-        if (days > 0) return `${days} hari yang lalu`;
-        if (hours > 0) return `${hours} jam yang lalu`;
-        if (minutes > 0) return `${minutes} menit yang lalu`;
-        return `${seconds} detik yang lalu`;
-      };
+  const [postData, setPostData] = useState<PostDetail>();
+  const [content, setContent] = useState<string>("");
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
-    return (
-        <>
-            <Navbar />
-            <div className="flex pt-16">
-                <Leftbar />
-                <div className="mx-[20%] w-[100%] py-5 px-8 flex gap-2 bg-gray-50">
-                    <FaCircleChevronLeft className='text-darkcyan w-8 h-8 hover:text-midcyan cursor-pointer' onClick={() => navigate("/")}/>
-                    <div className='flex flex-col gap-1 w-[80%]'>
-                        <div className="flex items-center gap-1 cursor-pointer">
-                            <img
-                                className="h-8 w-8 object-cover rounded-full"
-                                src={postData?.user.ProfilePicture || "/assets/DefaultUser.png"}
-                                alt="profile"
-                            />
-                            <p className='text-sm font-semibold'>{postData?.user.Username}</p>
-                        </div>
-                        <h2 className='font-semibold text-2xl'>{postData?.post.Title}</h2>
-                        <p className='text-sm mt-4'>{postData?.post.Description}</p>
-                        <div className="flex gap-5 items-center bg-gray-200 px-2 py-1 rounded-xl w-[15%] mt-3">
-                            <div className="flex gap-1 items-center">
-                                <BiSolidUpvote 
-                                    className='cursor-pointer hover:scale-105 hover:text-blue-500'
-                                />
-                                <p className='text-slate-600 font-bold'>{postData?.post.Upvote || 0}</p>
-                            </div>
-                            <BiSolidDownvote
-                                className='cursor-pointer hover:scale-105 hover:text-blue-500' 
-                            />
-                        </div>
-                        <div className="flex flex-col mt-4">
-                            {isFocused ? <form className='flex flex-col border-2 border-gray-500 text-gray-500 rounded-lg bg-gray-50 p-2' onSubmit={handleAddComment}>
-                                <input
-                                    type="text"
-                                    name="content"
-                                    className="bg-gray-50 outline-none text-black"
-                                    value={comment.content}
-                                    onChange={handleCommentChange}
-                                />                                
-                                <div className="flex justify-end gap-2">
-                                    <button className='bg-gray-500 rounded-xl px-2 py-1 text-white text-xs cursor-pointer' onClick={() => setIsFocused(false)}>Batalkan</button>
-                                    <button type="submit" className='bg-darkcyan rounded-xl px-2 py-1 text-white text-xs cursor-pointer'>Komen</button>
-                                </div>
-                            </form> : <>
-                                <input type="text" placeholder='Tambahkan komen' className='border-2 border-gray-500 text-gray-500 rounded-lg bg-gray-50 p-2' onClick={() => setIsFocused(true)}/>
-                            </>}
-                            <div className="flex flex-col mt-8 gap-5">
-                                {postData?.comments.map((comment) => (
-                                    <div className="flex flex-col">
-                                        <div className="flex gap-1 items-center">
-                                            <img src="/assets/DefaultUser.png" alt="" className='w-6 h-6 border-black border-2 rounded-full'/>
-                                            <div className="flex gap-1 items-center">
-                                                <p className='text-sm font-semibold'>{comment.Username}</p>
-                                                ·
-                                                <p className='text-sm font-semibold text-gray-400'>{getTimeAgo(comment.CreatedAt)}</p>
-                                            </div>
-                                        </div>
-                                        <div className="ml-7 mt-2">
-                                            <div className='text-sm'>{comment.Content}</div>
-                                            <div className="flex gap-4 items-center w-[30%] mt-2">
-                                                <div className="flex gap-1 items-center">
-                                                    <BiSolidUpvote 
-                                                        className='cursor-pointer hover:scale-105 hover:text-blue-500'
-                                                    />
-                                                    <p className='text-slate-600 font-bold text-xs'>{comment.Votes || 0}</p>
-                                                </div>
-                                                <BiSolidDownvote
-                                                    className='cursor-pointer hover:scale-105 hover:text-blue-500' 
-                                                />
-                                                <div className="flex gap-1  items-center cursor-pointer">
-                                                    <FaComment className='text-sm'/>
-                                                    <p className='text-xs font-semibold'>Balas</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  const fetchPostData = async () => {
+    if (!id) return;
+    try {
+      const { data } = await getPostDetail(Number(id));
+      setPostData(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPostData();
+  }, [id]);
+
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim() || !postData?.post.ID) return;
+
+    const payload: CommentAddData = {
+      user_id: user?.id ? Number(user.id) : null,
+      post_id: postData.post.ID,
+      parent_id: null,
+      content: content.trim(),
+    };
+
+    try {
+      await addComment(payload);
+      setContent("");
+      setIsFocused(false);
+      await fetchPostData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getTimeAgo = (date: Date): string => {
+    const now = new Date();
+    const targetDate = new Date(date);
+    const diff = now.getTime() - targetDate.getTime();
+
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (years > 0) return `${years} tahun yang lalu`;
+    if (months > 0) return `${months} bulan yang lalu`;
+    if (weeks > 0) return `${weeks} minggu yang lalu`;
+    if (days > 0) return `${days} hari yang lalu`;
+    if (hours > 0) return `${hours} jam yang lalu`;
+    if (minutes > 0) return `${minutes} menit yang lalu`;
+    return seconds <= 10 ? 'Baru saja' : `${seconds} detik yang lalu`;
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
+      <Navbar />
+
+      <div className="pt-16 max-w-[1600px] w-full mx-auto grid grid-cols-1 md:grid-cols-[240px_1fr] px-4 gap-6 items-start">
+        <Leftbar />
+
+        <main className="w-full py-6 flex gap-4 items-start">
+          <button 
+            onClick={() => navigate("/")}
+            className="text-slate-400 hover:text-indigo-600 transition-colors pt-1 backend-nav-btn"
+          >
+            <FaCircleChevronLeft className="w-8 h-8" />
+          </button>
+
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm flex-1 max-w-3xl">
+            <div className="flex items-center gap-2 mb-4">
+              <img
+                className="h-8 w-8 object-cover rounded-full ring-1 ring-slate-200 bg-slate-100"
+                src={postData?.user.ProfilePicture || "/assets/DefaultUser.png"}
+                alt="profile"
+              />
+              <span className="text-sm font-bold text-slate-800 tracking-tight">
+                {postData?.user.Username || "Memuat..."}
+              </span>
             </div>
-        </>
-    );
-}
+
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug mb-3">
+              {postData?.post.Title}
+            </h2>
+            
+            <p className="text-slate-700 font-medium text-sm leading-relaxed mb-6">
+              {postData?.post.Description}
+            </p>
+
+            <div className="flex items-center bg-slate-100 rounded-xl px-1 py-0.5 border border-slate-200/40 w-max mb-8">
+              <button className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-200/60 transition-colors">
+                <BiSolidUpvote className="text-lg" />
+              </button>
+              <span className="px-1 text-slate-700 font-bold text-xs">
+                {Array.isArray(postData?.post.Upvote) ? postData?.post.Upvote.length : 0}
+              </span>
+              <button className="p-1.5 text-slate-500 hover:text-rose-600 rounded-lg hover:bg-slate-200/60 transition-colors">
+                <BiSolidDownvote className="text-lg" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4 border-t border-slate-100 pt-6">
+              <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">
+                Komentar
+              </h3>
+
+              {isFocused ? (
+                <form onSubmit={handleAddComment} className="flex flex-col border border-slate-200 rounded-xl p-3 bg-slate-50 gap-3 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/10 transition-all">
+                  <textarea
+                    name="content"
+                    rows={3}
+                    placeholder="Tulis komentar Anda..."
+                    className="w-full bg-transparent outline-none text-sm text-slate-800 placeholder-slate-400 font-medium resize-none"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                  />                                
+                  <div className="flex justify-end gap-2 border-t border-slate-200/60 pt-2">
+                    <button 
+                      type="button" 
+                      className="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-200/60 transition-colors" 
+                      onClick={() => { setIsFocused(false); setContent(""); }}
+                    >
+                      Batalkan
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={!content.trim()}
+                      className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 px-4 py-1.5 rounded-lg text-white text-xs font-bold transition-colors shadow-sm"
+                    >
+                      Komen
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <input 
+                  type="text" 
+                  placeholder="Tambahkan komentar fungsional..." 
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 placeholder-slate-400 bg-slate-50 hover:bg-slate-100/50 cursor-pointer transition-all shadow-sm" 
+                  onClick={() => setIsFocused(true)}
+                />
+              )}
+
+              <div className="flex flex-col gap-6 mt-4">
+                {postData?.comments?.map((comment, index) => (
+                  <div key={comment.ID || index} className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-2">
+                      <img 
+                        src="/assets/DefaultUser.png" 
+                        alt="Komentator" 
+                        className="w-6 h-6 rounded-full ring-1 ring-slate-200"
+                      />
+                      <span className="text-xs font-bold text-slate-800 tracking-tight">
+                        {comment.Username}
+                      </span>
+                      <span className="text-slate-400 text-xs font-medium">
+                        • {getTimeAgo(comment.CreatedAt)}
+                      </span>
+                    </div>
+                    
+                    <div className="pl-8 flex flex-col gap-2">
+                      <p className="text-slate-700 text-sm font-medium leading-relaxed">
+                        {comment.Content}
+                      </p>
+                      
+                      <div className="flex items-center gap-4 text-slate-500">
+                        <div className="flex items-center bg-slate-100 rounded-lg border border-slate-200/40">
+                          <button className="p-1 text-slate-400 hover:text-indigo-600 rounded transition-colors">
+                            <BiSolidUpvote className="text-sm" />
+                          </button>
+                          <span className="px-1 text-slate-700 font-bold text-[11px]">
+                            {comment.Votes || 0}
+                          </span>
+                          <button className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors">
+                            <BiSolidDownvote className="text-sm" />
+                          </button>
+                        </div>
+                        
+                        <button className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors">
+                          <FaComment className="text-xs" />
+                          <span>Balas</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
 
 export default Post;
