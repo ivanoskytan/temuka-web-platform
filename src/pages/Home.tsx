@@ -7,23 +7,24 @@ import Chat from '../components/Chat';
 import useChatStore from '../store/chatStore';
 
 const Home: React.FC = () => {
-
   const { isChatVisible } = useChatStore();
 
   return (
-    <>
-        <Navbar />
-        <div className="flex pt-16">
-            <Leftbar />
-            <div className="mx-[20%] w-[100%]">
-              <Feed />
-            </div>
-            <Rightbar />
-        </div>
-        {isChatVisible && (
-          <Chat />
-        )}
-    </>
+    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
+      <Navbar />
+      
+      <div className="pt-16 max-w-[1600px] w-full mx-auto grid grid-cols-1 md:grid-cols-[240px_1fr] lg:grid-cols-[240px_1fr_320px] px-4 gap-6 items-start">
+        <Leftbar />
+        
+        <main className="w-full py-6">
+          <Feed />
+        </main>
+        
+        <Rightbar />
+      </div>
+
+      {isChatVisible && <Chat />}
+    </div>
   );
 }
 

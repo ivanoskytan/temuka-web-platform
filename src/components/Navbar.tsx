@@ -1,19 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaSearch } from "react-icons/fa";
-import { FaLayerGroup } from "react-icons/fa";
-import { IoPerson } from "react-icons/io5";
+import { FaSearch, FaLayerGroup } from "react-icons/fa";
+import { IoPerson, IoChatbubbleEllipsesOutline } from "react-icons/io5";
 
 import useAuthStore from '../store/authStore';
 import { UserDetailData } from '../types';
 import { searchUsers } from '../services/userService';
-import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import useChatStore from '../store/chatStore';
 
-
 const Navbar: React.FC = () => {
-
-  // const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
   const { isChatVisible, setChatVisible } = useChatStore();
   const [usersList, setUsersList] = useState<UserDetailData[]>([]);
@@ -22,77 +17,95 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await searchUsers(searchQuery);
-      setUsersList(data)
-    }
-    fetchData()
-  }, [searchQuery])
-
-  const handleSearchUsers = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
-  };
-
+      if (!searchQuery.trim()) {
+        setUsersList([]);
+        return;
+      }
+      try {
+        const { data } = await searchUsers(searchQuery);
+        setUsersList(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
+  }, [searchQuery]);
 
   return (
-    <div className="fixed h-16 bg-white flex items-center px-5 border-b-2 border-gray-200 w-[100%] z-99">
-        <div className="w-[20%]">
-          <h1 className='text-darkcyan font-extrabold text-3xl'>temuka</h1>
+    <div className="fixed top-0 left-0 right-0 h-16 bg-white flex items-center justify-between px-6 border-b border-slate-200 z-50 shadow-sm backdrop-blur-md bg-white/95">
+      <div className="flex items-center">
+        <Link to="/" className="text-indigo-600 font-black text-2xl tracking-tight hover:opacity-90 transition-opacity">
+          temuka
+        </Link>
+      </div>
+
+      <div className="relative w-full max-w-md mx-4">
+        <div className="flex gap-2.5 bg-slate-100 rounded-xl px-4 py-2 w-full items-center focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-600 focus-within:shadow-sm transition-all border border-transparent focus-within:border-transparent">
+          <FaSearch className="text-slate-400 text-sm shrink-0" />
+          <input 
+            type="search" 
+            className="text-slate-800 font-medium text-sm w-full bg-transparent outline-none placeholder-slate-400"
+            placeholder="Cari prodi, universitas, komunitas"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-        <div className="w-[40%] ml-10 flex justify-center">
-          <div className="flex gap-3 bg-gray-100 rounded-2xl px-3 py-2 w-[100%] outline-blue-200 hover:outline-blue-300 items-center">
-            <FaSearch />
-            <input 
-              type="search" 
-              className='text-slate-600 font-semibold text-sm w-[100%] bg-gray-100 outline-none'
-              placeholder='Cari prodi, universitas, komunitas'
-              onChange={handleSearchUsers}
-            />
+
+        {searchQuery.trim() && (
+          <div className="absolute top-13 left-0 right-0 bg-white rounded-2xl p-2 shadow-xl border border-slate-100 flex flex-col gap-1 max-h-80 overflow-y-auto">
+            {usersList?.length ? (
+              usersList.map((u) => (
+                <Link key={u.ID} to={`/profile/${u.ID}`} onClick={() => setSearchQuery('')}>
+                  <div className="flex p-2 items-center gap-3 hover:bg-slate-50 cursor-pointer rounded-xl transition-colors">
+                    <img
+                      className="h-9 w-9 object-cover rounded-full border border-slate-100"
+                      src={u?.ProfilePicture ? publicFolder + u.ProfilePicture : "/assets/DefaultUser.png"}
+                      alt="profile"
+                    />
+                    <p className="text-slate-700 font-semibold text-sm">{u?.Username}</p>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="p-8 text-center flex flex-col items-center justify-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100 shadow-inner">
+                  <FaSearch className="text-base text-slate-400/80" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-slate-800 font-semibold text-sm tracking-tight">
+                    Tidak ada hasil ditemukan
+                  </p>
+                  <p className="text-slate-400 text-xs font-medium max-w-[240px] mx-auto leading-normal">
+                    Coba periksa kembali ejaan kata kunci pencarian Anda.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          {searchQuery ? (
-            usersList?.length ? (
-              <div className="bg-white absolute top-14 rounded-2xl px-2 py-2 shadow-md left-50 w-[40%] flex flex-col gap-1">
-                {usersList.map(user => (
-                  <Link to={`/profile/${user.ID}`}>
-                    <div className="flex p-1 items-center gap-2 hover:bg-slate-100 cursor-pointer rounded-md">
-                      {user?.ProfilePicture === "" ? (
-                        <img
-                          className="h-10 w-10 object-cover rounded-full border-4 border-white"
-                          src="/assets/DefaultUser.png"
-                          alt="profile"
-                        />
-                      ) : 
-                      (
-                        <img
-                          className="h-10 w-10 object-cover rounded-full border-4 border-white"
-                          src={publicFolder + user?.ProfilePicture}
-                          alt="profile"
-                        />
-                      )}
-                      <p className='text-slate-800 font-semibold'>{user?.Username}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ): (
-              <div className="bg-white absolute top-14 rounded-2xl px-2 py-2 shadow-md left-50 w-[35%]">
-                <p className='text-blue-600 font-semibold text-center'>No results</p>
-              </div>
-            )
-          ) : (
-            <div></div>
-          )}
-        </div>
-        <div className="w-[50%] flex gap-12 justify-end">
-          <button onClick={() => setChatVisible(!isChatVisible)}>
-            <IoChatbubbleEllipsesOutline className='text-darkcyan hover:bg-yellow rounded-full text-4xl p-1'/>
-          </button>
-          <Link to={`/communities/${Number(user?.id)}`}>
-            <FaLayerGroup className='text-darkcyan hover:bg-yellow rounded-full text-4xl p-1'/>
-          </Link>
-          <Link to={`/profile/${Number(user?.id)}`}>
-            <IoPerson className='text-darkcyan hover:bg-yellow rounded-full text-4xl p-1'/>
-          </Link>
-        </div>
+        )}
+      </div>
+
+      <div className="flex gap-1.5 items-center">
+        <button 
+          onClick={() => setChatVisible(!isChatVisible)}
+          className={`p-2.5 rounded-xl transition-all ${isChatVisible ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-100'}`}
+          aria-label="Toggle Chat"
+        >
+          <IoChatbubbleEllipsesOutline className="text-2xl" />
+        </button>
+        <Link 
+          to={`/communities/${Number(user?.id)}`}
+          className="p-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+        >
+          <FaLayerGroup className="text-xl" />
+        </Link>
+        <Link 
+          to={`/profile/${Number(user?.id)}`}
+          className="p-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+        >
+          <IoPerson className="text-xl" />
+        </Link>
+      </div>
     </div>
   );
 }

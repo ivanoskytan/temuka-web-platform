@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 
 const CreatePost: React.FC = () => {
   return (
-    <div className='bg-white p-5 w-[100%] text-center'>
-        <div className="font-semibold py-2 px-3 bg-darkcyan rounded-lg cursor-pointer hover:opacity-80 text-white">
-          <Link to={'/submit'}>
-            Buat post +
-          </Link>
-        </div>
+    <div className="w-full">
+      <Link 
+        to={'/submit'}
+        className="flex items-center justify-center font-semibold py-3 px-4 bg-indigo-600 rounded-xl hover:bg-indigo-500 text-white shadow-md shadow-indigo-100 text-sm transition-all active:scale-[0.98] w-full"
+      >
+        Buat post +
+      </Link>
     </div>
   );
 }
