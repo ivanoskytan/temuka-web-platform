@@ -13,6 +13,8 @@ import UniversityDetail from './pages/UniversityDetail';
 import Submit from './pages/Submit';
 import Post from './pages/Post';
 import Communities from './pages/Communities';
+import MajorList from './pages/Majors';
+import MajorDetail from './pages/MajorDetail';
 import RouteWrapper from './components/RouteWrapper';
 import CommunitySubmit from './pages/CommunitySubmit';
 
@@ -98,6 +100,22 @@ const App: React.FC = () => {
           element={
             <RouteWrapper type="public">
               <CommunityPage />
+            </RouteWrapper>
+          }
+        />
+        <Route
+          path="/majors"
+          element={
+            <RouteWrapper type="public">
+              <MajorList />
+            </RouteWrapper>
+          }
+        />
+        <Route
+          path="/majors/:slug"
+          element={
+            <RouteWrapper type="public">
+              <MajorDetail />
             </RouteWrapper>
           }
         />

@@ -91,7 +91,6 @@ const Community: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 w-full items-start">
         <div className="flex flex-col gap-4 w-full">
-          {/* Feed Content Placeholder */}
         </div>
         
         <div className="flex flex-col gap-5 w-full sticky top-22">

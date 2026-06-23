@@ -1,7 +1,12 @@
-import internal from "stream"
+export interface UserData {
+    ID: Number
+    Username: string
+    Displayname: string
+    ProfilePicture: string  
+}
 
 export interface FollowersData {
-    ID: string
+    ID: Number
     Username: string
     ProfilePicture: string
     Email: string
@@ -96,10 +101,49 @@ export interface UniversityData {
     Stars: number
     Type: string
     Accreditation: string
+    Reviews?: UniversityReview[]
     MinTuition: number
     MaxTuition: number
     AcceptanceRate: number
 }
+
+export interface MajorUniversityData {
+    ID?: number
+    Name: string
+    Logo?: string
+}
+
+export interface MajorData {
+    ID?: number
+    Name: string
+    Description: string
+    UniversityData: MajorUniversityData
+    TotalReviews?: number
+    Rating?: number
+    Reviews?: MajorReview[]
+    CreatedAt: Date
+    UpdatedAt: Date
+}
+
+export interface UniversityReview {
+    ID?: number
+    UniversityID?: number
+    UserData: UserData
+    Text: string
+    Stars: number
+    CreatedAt: Date
+    UpdatedAt: Date
+}
+
+export interface MajorReview {
+    ID?: number
+    MajorID: number
+    UserData: UserData
+    Text: string
+    Stars: number
+    CreatedAt: Date
+    UpdatedAt: Date
+}   
 
 export interface GeneralAPIResponse<T> {
     status: boolean
@@ -114,8 +158,9 @@ export interface GeneralAPIMutateResponse {
 export type GeneralUserDetailResponse = GeneralAPIResponse<UserDetailData> 
 export type GeneralPostDetailResponse = GeneralAPIResponse<PostData> 
 export type GeneralUserRegisterResponse = GeneralAPIResponse<UserAuthData> 
+export type GeneralMajorDetailResponse = GeneralAPIResponse<MajorData>
 export type GeneralUserLoginResponse = GeneralAPIResponse<UserAuthData> & { token: string }
 export type GeneralPostResponse = GeneralAPIResponse<PostData[]>
 export type GeneralFollowerListResponse = GeneralAPIResponse<FollowersData[]>
-export type GeneralUniversitiesResponse = GeneralAPIResponse<UniversityData[]>
-
+export type GeneralUniversityListResponse = GeneralAPIResponse<UniversityData[]>
+export type GeneralMajorListResponse = GeneralAPIResponse<MajorData[]>
