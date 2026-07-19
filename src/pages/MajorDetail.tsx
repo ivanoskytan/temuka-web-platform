@@ -2,58 +2,28 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Leftbar from '../components/Leftbar';
 import { useParams, useNavigate } from 'react-router';
+import { getMajorDetail } from '../services/majorService';
 import { MajorData } from '../types';
 import { FaArrowLeft, FaStar, FaRegStar, FaUserCircle, FaCalendarAlt, FaComments, FaUniversity, FaFileAlt } from 'react-icons/fa';
 
-const DUMMY_DETAIL_BACKEND: MajorData = {
-  ID: 1,
-  Name: "Ilmu Komputer",
-  Description: "Program Studi Ilmu Komputer berfokus pada pengembangan kemampuan analitis dan praktis dalam rekayasa perangkat lunak, sistem cerdas, arsitektur jaringan, serta pengolahan data skala besar (Big Data). Kurikulum dirancang secara adaptif untuk membekali mahasiswa dengan fondasi algoritma yang kuat serta penguasaan teknologi mutakhir guna mencetak inovator teknologi digital masa depan.",
-  UniversityData: {
-    ID: 10,
-    Name: "Universitas Indonesia",
-    Logo: ""
-  },
-  TotalReviews: 2,
-  Rating: 5,
-  CreatedAt: new Date("2026-01-15T08:00:00Z"),
-  UpdatedAt: new Date("2026-02-20T14:30:00Z"),
-  Reviews: [
-    {
-      ID: 101,
-      MajorID: 1,
-      UserData: {
-        ID: 1,
-        Username: "John Rex",
-        Displayname: "Mahasiswa sejati",
-        ProfilePicture: ""
-      },
-      Text: "Materi kuliah sangat relevan dengan kebutuhan industri saat ini, terutama pada fokus Cloud Architecture dan Artificial Intelligence.",
-      Stars: 5,
-      CreatedAt: new Date("2026-05-10T12:00:00Z"),
-      UpdatedAt: new Date("2026-05-10T12:00:00Z")
-    },
-    {
-      ID: 102,
-      MajorID: 1,
-      UserData: {
-        ID: 2,
-        Username: "Axel",
-        Displayname: "Mahasiswa abadi",
-        ProfilePicture: ""
-      },
-      Text: "Dosen-dosennya sangat suportif dan praktikal. Banyak proyek riil yang bisa dimasukkan ke portofolio buat bekal lulus nanti.",
-      Stars: 5,
-      CreatedAt: new Date("2026-05-12T09:15:00Z"),
-      UpdatedAt: new Date("2026-05-12T09:15:00Z")
-    }
-  ]
-};
-
 const MajorDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [major, setMajor] = useState<MajorData | null>(DUMMY_DETAIL_BACKEND);
+  const [major, setMajor] = useState<MajorData | null>(null);
+
+  useEffect(() => {
+    if (!id || id === 'undefined') return;
+
+    const fetchData = async () => {
+      try {
+        const { data } = await getMajorDetail(id);
+        setMajor(data);
+      } catch(err) {
+        console.error(err);
+      }
+    };
+    fetchData();
+  }, [id]);
 
   const renderStars = (rating: number) => {
     return (
@@ -65,8 +35,10 @@ const MajorDetail: React.FC = () => {
     );
   };
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+  const formatDate = (dateInput: Date | string) => {
+    if (!dateInput) return '-';
+    const parsedDate = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(parsedDate);
   };
 
   if (!major) {
@@ -85,8 +57,8 @@ const MajorDetail: React.FC = () => {
         <Leftbar />
 
         <main className="w-full py-6 flex flex-col gap-6">
-          
           <div className="flex flex-col gap-4 max-w-4xl w-full">
+            
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => navigate(-1)} 
@@ -102,6 +74,7 @@ const MajorDetail: React.FC = () => {
               </div>
             </div>
 
+            {/* Kartu Informasi Utama */}
             <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm relative overflow-hidden w-full">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
               
@@ -110,7 +83,6 @@ const MajorDetail: React.FC = () => {
                   {major.Name}
                 </h1>
                 
-                {/* Connected University Meta Section */}
                 {major.UniversityData && (
                   <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm mt-1 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl w-fit">
                     <FaUniversity className="text-indigo-500 text-base" />
@@ -120,7 +92,7 @@ const MajorDetail: React.FC = () => {
                 )}
               </div>
 
-              {/* Micro Metrics Rows */}
+              {/* Baris Metrik */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-100">
                 <div className="bg-slate-50/60 border border-slate-150 p-4 rounded-xl flex items-center gap-4">
                   <div className="p-3 bg-amber-50 rounded-xl text-amber-500 text-lg shadow-2xs border border-amber-100/40">
@@ -189,7 +161,7 @@ const MajorDetail: React.FC = () => {
                     >
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex items-center gap-3 min-w-0">
-                          {rev.UserData.ProfilePicture ? (
+                          {rev.UserData?.ProfilePicture ? (
                             <img 
                               src={rev.UserData.ProfilePicture} 
                               alt={rev.UserData.Username} 
@@ -202,10 +174,10 @@ const MajorDetail: React.FC = () => {
                           )}
                           <div className="flex flex-col min-w-0">
                             <span className="text-sm font-bold text-slate-800 tracking-tight truncate">
-                              {rev.UserData.Displayname || rev.UserData.Username}
+                              {rev.UserData?.Displayname || rev.UserData?.Username || 'Anonim'}
                             </span>
                             <span className="text-[11px] text-slate-400 font-medium truncate">
-                              @{rev.UserData.Username} • {formatDate(rev.CreatedAt)}
+                              @{rev.UserData?.Username || 'anonymous'} • {formatDate(rev.CreatedAt)}
                             </span>
                           </div>
                         </div>

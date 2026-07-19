@@ -11,8 +11,8 @@ export async function createMajor(payload: any) {
     return res.json();
 }
 
-export async function getMajorDetail(slug: string) {
-    const res = await fetch(`${API_KEY}/api/major/${slug}`, {
+export async function getMajorDetail(id: string) {
+    const res = await fetch(`${API_KEY}/api/major/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });

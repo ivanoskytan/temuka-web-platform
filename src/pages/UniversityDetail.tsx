@@ -98,7 +98,7 @@ const UniversityDetail: React.FC = () => {
               </div>
             </div>
 
-            <StarRating stars={Number(universityDetail?.Stars || 0)}/>
+            <StarRating stars={Number(universityDetail?.Rating || 0)}/>
           </div>
 
           <div className="flex border-b border-slate-200 gap-1 overflow-x-auto scrollbar-none w-full">

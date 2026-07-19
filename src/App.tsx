@@ -42,7 +42,7 @@ const App: React.FC = () => {
         <Route
           path="/"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <Home />
             </RouteWrapper>
           }
@@ -50,7 +50,7 @@ const App: React.FC = () => {
         <Route
           path="/submit"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <Submit />
             </RouteWrapper>
           }
@@ -58,7 +58,7 @@ const App: React.FC = () => {
         <Route
           path="/community/:slug/submit"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <CommunitySubmit />
             </RouteWrapper>
           }
@@ -66,7 +66,7 @@ const App: React.FC = () => {
         <Route
           path="/post/:id"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <Post />
             </RouteWrapper>
           }
@@ -74,7 +74,7 @@ const App: React.FC = () => {
         <Route
           path="/universities"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <Universities />
             </RouteWrapper>
           }
@@ -82,7 +82,7 @@ const App: React.FC = () => {
         <Route
           path="/university/:slug"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <UniversityDetail />
             </RouteWrapper>
           }
@@ -90,7 +90,7 @@ const App: React.FC = () => {
         <Route
           path="/communities"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <Communities />
             </RouteWrapper>
           }
@@ -98,7 +98,7 @@ const App: React.FC = () => {
         <Route
           path="/community/:slug"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <CommunityPage />
             </RouteWrapper>
           }
@@ -106,15 +106,15 @@ const App: React.FC = () => {
         <Route
           path="/majors"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <MajorList />
             </RouteWrapper>
           }
         />
         <Route
-          path="/majors/:slug"
+          path="/majors/:id"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <MajorDetail />
             </RouteWrapper>
           }
@@ -122,7 +122,7 @@ const App: React.FC = () => {
         <Route
           path="/profile/:id"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <Profile />
             </RouteWrapper>
           }
@@ -130,7 +130,7 @@ const App: React.FC = () => {
         <Route
           path="/settings"
           element={
-            <RouteWrapper type="public">
+            <RouteWrapper type="protected">
               <Settings />
             </RouteWrapper>
           }

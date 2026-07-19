@@ -12,11 +12,13 @@ const UniversityCard: React.FC<UniversityData> = ({
   TotalReviews,
   TotalMajors,
   Address,
-  Stars,
+  Rating,
   Type,
   Accreditation
 }) => {
   const navigate = useNavigate();
+
+  const displayRating = Rating ?? 0;
 
   return (
     <div 
@@ -42,7 +44,7 @@ const UniversityCard: React.FC<UniversityData> = ({
             <div className="flex items-center gap-3 mt-1 text-xs font-semibold text-slate-500">
               <div className="flex gap-1 items-center text-amber-500">
                 <FaStar className="text-sm shrink-0" />
-                <span>{Stars.toFixed(1)}</span>
+                <span>{displayRating.toFixed(1)}</span>
               </div>
               <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
               <div className="flex gap-1 items-center">

@@ -98,7 +98,7 @@ export interface UniversityData {
     TotalMajors: number
     Logo: string
     Address: string
-    Stars: number
+    Rating: number | null
     Type: string
     Accreditation: string
     Reviews?: UniversityReview[]
@@ -119,7 +119,7 @@ export interface MajorData {
     Description: string
     UniversityData: MajorUniversityData
     TotalReviews?: number
-    Rating?: number
+    Rating?: number | null
     Reviews?: MajorReview[]
     CreatedAt: Date
     UpdatedAt: Date

@@ -6,60 +6,6 @@ import { UniversityData } from "../types";
 import { getUniversities } from '../services/universityService';
 import { FaSearch } from 'react-icons/fa'; 
 
-const DUMMY_UNIVERSITIES: UniversityData[] = [
-  {
-    ID: 1,
-    Name: "Universitas Gadjah Mada",
-    Slug: "ugm",
-    Summary: "Universitas nasional tertua dan salah satu yang terbaik di Indonesia, berfokus pada pendidikan berkualitas tinggi dan pengabdian masyarakat.",
-    Website: "https://ugm.ac.id",
-    Logo: "",
-    TotalReviews: 340,
-    TotalMajors: 95,
-    Address: "Sleman, DI Yogyakarta",
-    Stars: 4.8,
-    Type: "Negeri",
-    MinTuition: 0,
-    MaxTuition: 26000000,
-    Accreditation: "Unggul",
-    AcceptanceRate: 8.5
-  },
-  {
-    ID: 2,
-    Name: "Universitas Indonesia",
-    Slug: "ui",
-    Summary: "Kampus modern bernuansa hijau yang menghasilkan lulusan unggul berkompetensi global serta pusat riset mutakhir di Indonesia.",
-    Website: "https://ui.ac.id",
-    Logo: "",
-    TotalReviews: 295,
-    TotalMajors: 88,
-    Address: "Depok, Jawa Barat",
-    Stars: 4.7,
-    Type: "Negeri",
-    MinTuition: 0,
-    MaxTuition: 20000000,
-    Accreditation: "Unggul",
-    AcceptanceRate: 7.2
-  },
-  {
-    ID: 3,
-    Name: "Institut Teknologi Bandung",
-    Slug: "itb",
-    Summary: "Pusat keunggulan sains, teknologi, dan seni di Indonesia dengan standar akademik ketat dan ekosistem inovasi digital.",
-    Website: "https://itb.ac.id",
-    Logo: "",
-    TotalReviews: 180,
-    TotalMajors: 52,
-    Address: "Bandung, Jawa Barat",
-    Stars: 4.9,
-    Type: "Negeri",
-    MinTuition: 0,
-    MaxTuition: 25000000,
-    Accreditation: "Unggul",
-    AcceptanceRate: 6.8
-  }
-];
-
 const Universities: React.FC = () => {
   const [universities, setUniversities] = useState<UniversityData[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>(''); 
@@ -73,11 +19,8 @@ const Universities: React.FC = () => {
         
         if (data && data.length > 0) {
           setUniversities(data);
-        } else {
-          setUniversities(DUMMY_UNIVERSITIES);
-        }
+        } 
       } catch (err) {
-        setUniversities(DUMMY_UNIVERSITIES);
       } finally {
         setIsLoading(false);
       }
@@ -135,7 +78,7 @@ const Universities: React.FC = () => {
                   TotalReviews={u.TotalReviews}
                   TotalMajors={u.TotalMajors}
                   Address={u.Address}
-                  Stars={u.Stars}
+                  Rating={u.Rating}
                   Type={u.Type}
                   MinTuition={u.MinTuition}
                   MaxTuition={u.MaxTuition}

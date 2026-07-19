@@ -6,51 +6,6 @@ import { MajorData } from '../types';
 import { FaSearch, FaStar, FaRegStar, FaCommentAlt, FaUniversity } from 'react-icons/fa';
 import { getMajorList } from '../services/majorService';
 
-const DUMMY_BACKEND_MAJORS: MajorData[] = [
-  {
-    ID: 1,
-    Name: "Teknik Industri",
-    UniversityData: {
-      ID: 10,
-      Name: "Universitas Indonesia",
-      Logo: ""
-    },
-    Description: "",
-    TotalReviews: 48,
-    Rating: 5,
-    CreatedAt: new Date("2026-01-15T08:00:00Z"),
-    UpdatedAt: new Date("2026-02-20T14:30:00Z")
-  },
-  {
-    ID: 2,
-    Name: "Hukum",
-    UniversityData: {
-      ID: 12,
-      Name: "Universitas Gadjah Mada",
-      Logo: ""
-    },
-    Description: "",
-    TotalReviews: 32,
-    Rating: 4,
-    CreatedAt: new Date("2026-01-16T09:15:00Z"),
-    UpdatedAt: new Date("2026-03-01T11:20:00Z")
-  },
-  {
-    ID: 3,
-    Name: "Desain Komunikasi Visual",
-    UniversityData: {
-      ID: 30,
-      Name: "Universitas Bina Nusantara",
-      Logo: ""
-    },
-    Description: "",      
-    TotalReviews: 14,
-    Rating: 4,
-    CreatedAt: new Date("2026-02-01T10:00:00Z"),
-    UpdatedAt: new Date("2026-02-15T16:45:00Z")
-  }
-];
-
 const Majors: React.FC = () => {
   const navigate = useNavigate();
   const [majors, setMajors] = useState<MajorData[]>([]);
@@ -65,11 +20,8 @@ const Majors: React.FC = () => {
         
         if (data && data.length > 0) {
           setMajors(data);
-        } else {
-          setMajors(DUMMY_BACKEND_MAJORS);
-        }
+        } 
       } catch (err) {
-        setMajors(DUMMY_BACKEND_MAJORS);
       } finally {
         setIsLoading(false);
       }
