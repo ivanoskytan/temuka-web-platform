@@ -1,4 +1,4 @@
-import API_KEY, { getAuthHeaders } from ".";
+import { API_KEY, getAuthHeaders } from ".";
 
 export async function createCommunity(payload: any) {
     const res = await fetch(`${API_KEY}/api/community/create`, {

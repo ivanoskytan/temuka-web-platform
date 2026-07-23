@@ -5,6 +5,15 @@ export interface UserData {
     ProfilePicture: string  
 }
 
+export interface UserSearchItem {
+    ID: number;
+    Username: string;
+    Displayname?: string;
+    Email?: string;
+    ProfilePicture?: string;
+    CoverPicture?: string;
+  }
+
 export interface FollowersData {
     ID: Number
     Username: string
@@ -146,7 +155,7 @@ export interface MajorReview {
 }   
 
 export interface GeneralAPIResponse<T> {
-    status: boolean
+    message: string
     data: T
 }
 
@@ -164,3 +173,4 @@ export type GeneralPostResponse = GeneralAPIResponse<PostData[]>
 export type GeneralFollowerListResponse = GeneralAPIResponse<FollowersData[]>
 export type GeneralUniversityListResponse = GeneralAPIResponse<UniversityData[]>
 export type GeneralMajorListResponse = GeneralAPIResponse<MajorData[]>
+export type GeneralSearchUserResponse = GeneralAPIResponse<UserSearchItem[]>

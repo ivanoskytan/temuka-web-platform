@@ -1,4 +1,4 @@
-import API_KEY from ".";
+import { API_KEY } from ".";
 
 export async function loginUser(payload: any) {
     return fetch(`${API_KEY}/api/auth/login`, {

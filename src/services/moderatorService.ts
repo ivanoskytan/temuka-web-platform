@@ -1,4 +1,4 @@
-import API_KEY, { getAuthHeaders } from ".";
+import { API_KEY, getAuthHeaders } from ".";
 
 export async function inviteRequest(payload: any) {
     const res = await fetch(`${API_KEY}/api/moderator/invite`, {

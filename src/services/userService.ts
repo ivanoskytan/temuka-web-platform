@@ -1,4 +1,4 @@
-import API_KEY, { getAuthHeaders } from ".";
+import { API_KEY, getAuthHeaders } from ".";
 
 export async function getUserDetail(id: number) {
     const res = await fetch(`${API_KEY}/api/user/${id}`, {

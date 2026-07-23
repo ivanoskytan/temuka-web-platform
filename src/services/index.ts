@@ -1,5 +1,5 @@
-const API_KEY = process.env.REACT_APP_API_SERVICE;
-export const WEBSOCKET_CONN = "ws://3.25.103.16:3200"
+export const API_KEY = process.env.REACT_APP_API_SERVICE;
+export const WEBSOCKET_KEY = process.env.REACT_APP_WEBSOCKET_SERVICE;
 
 export function getToken() {
     if (typeof window !== 'undefined') {
@@ -20,4 +20,3 @@ export function getAuthHeaders() {
     }
 }
 
-export default API_KEY;

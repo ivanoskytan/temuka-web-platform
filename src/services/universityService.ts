@@ -1,4 +1,4 @@
-import API_KEY, { getAuthHeaders } from ".";
+import { API_KEY, getAuthHeaders } from ".";
 
 export async function getUniversityDetail(slug: string) {
     const res = await fetch(`${API_KEY}/api/university/${slug}`, {
