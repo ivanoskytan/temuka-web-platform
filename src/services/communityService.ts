@@ -42,7 +42,7 @@ export async function getCommunityPosts(id: number) {
     return res.json();
 }
 
-export async function getJoinedCommunities(payload: any) {
+export async function getUserJoinedCommunities(payload: any) {
     const res = await fetch(`${API_KEY}/api/community/user`, {
         method: 'POST',
         headers: getAuthHeaders(),

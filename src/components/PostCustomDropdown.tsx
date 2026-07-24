@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FaChevronDown } from 'react-icons/fa';
-import { getCommunityDetail, getJoinedCommunities } from '../services/communityService';
+import { getCommunityDetail, getUserJoinedCommunities } from '../services/communityService';
 import useAuthStore from '../store/authStore';
 import { CommunityData } from '../types';
 
@@ -33,7 +33,7 @@ const PostCustomDropdown: React.FC<DropdownValue> = ({ current_slug = null, setS
             const payload = {
                 user_id: user?.id
             };
-            const { data } = await getJoinedCommunities(payload);
+            const { data } = await getUserJoinedCommunities(payload);
             setJoinedCommunities(data);
         };
         fetchData();
