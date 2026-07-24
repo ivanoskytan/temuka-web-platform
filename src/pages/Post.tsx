@@ -113,20 +113,20 @@ const Post: React.FC = () => {
             <div className="flex items-center gap-2 mb-4">
               <img
                 className="h-8 w-8 object-cover rounded-full ring-1 ring-slate-200 bg-slate-100"
-                src={postData?.user.ProfilePicture || "/assets/DefaultUser.png"}
+                src={postData?.user?.ProfilePicture || "/assets/DefaultUser.png"}
                 alt="profile"
               />
               <span className="text-sm font-bold text-slate-800 tracking-tight">
-                {postData?.user.Username || "Memuat..."}
+                {postData?.user?.Username || "Memuat..."}
               </span>
             </div>
 
             <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug mb-3">
-              {postData?.post.Title}
+              {postData?.post?.Title}
             </h2>
             
             <p className="text-slate-700 font-medium text-sm leading-relaxed mb-6">
-              {postData?.post.Description}
+              {postData?.post?.Description}
             </p>
 
             <div className="flex items-center bg-slate-100 rounded-xl px-1 py-0.5 border border-slate-200/40 w-max mb-8">
@@ -134,7 +134,7 @@ const Post: React.FC = () => {
                 <BiSolidUpvote className="text-lg" />
               </button>
               <span className="px-1 text-slate-700 font-bold text-xs">
-                {Array.isArray(postData?.post.Upvote) ? postData?.post.Upvote.length : 0}
+                {Array.isArray(postData?.post?.Upvote) ? postData?.post?.Upvote.length : 0}
               </span>
               <button className="p-1.5 text-slate-500 hover:text-rose-600 rounded-lg hover:bg-slate-200/60 transition-colors">
                 <BiSolidDownvote className="text-lg" />

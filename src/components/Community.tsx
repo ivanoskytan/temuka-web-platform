@@ -3,34 +3,67 @@ import { RiTeamLine } from "react-icons/ri";
 import { GrNotes } from "react-icons/gr";
 import { TbMessageCircleQuestion } from "react-icons/tb";
 import { FaChevronDown, FaPlus } from "react-icons/fa6";
-import { getCommunityDetail, joinCommunity } from "../services/communityService";
-import { CommunityData } from "../types";
+import { getCommunityDetail, joinCommunity, getCommunityPosts } from "../services/communityService";
+import { CommunityData, PostData } from "../types";
 import useAuthStore from "../store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
+import PostCard from "../components/PostCard"; 
 
 const Community: React.FC = () => {
   const [communityDetail, setCommunityDetail] = useState<CommunityData>();
+  const [posts, setPosts] = useState<PostData[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState<boolean>(true);
+  
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const { slug } = useParams();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCommunityAndPosts = async () => {
+      if (!slug) return;
+      
       try {
-        const { data } = await getCommunityDetail(String(slug));
-        setCommunityDetail(data);
-      } catch(err) {
-        console.error(err);
+        setLoadingPosts(true);
+        
+        const communityRes = await getCommunityDetail(String(slug));
+        const communityData = communityRes.data?.data || communityRes.data;
+        setCommunityDetail(communityData);
+
+        const targetCommunityId = communityData?.ID || communityData?.id;
+        
+        if (targetCommunityId) {
+          const postsRes = await getCommunityPosts(targetCommunityId);
+          const rawPostsList = postsRes.data?.data || postsRes.data || [];
+
+          const formattedPosts: PostData[] = rawPostsList.map((item: any) => ({
+            ID: item.post_id || item.id || item.ID,
+            UserID: item.user_id,
+            Title: item.title,
+            Description: item.description || "",
+            Image: item.image || "",
+            Upvote: Array(item.upvote_count || 0).fill(""),
+            Comments: item.comment_count || 0,
+            CreatedAt: new Date(item.created_at),
+            UpdatedAt: new Date(item.created_at),
+          }));
+
+          setPosts(formattedPosts);
+        }
+      } catch (err) {
+        console.error("Error fetching community or posts:", err);
+      } finally {
+        setLoadingPosts(false);
       }
     };
-    fetchData();
+
+    fetchCommunityAndPosts();
   }, [slug]);
 
   const handleJoin = () => {
-    const payload = {
-      user_id: user?.id
-    };
-    joinCommunity(payload, 10);
+    const payload = { user_id: user?.id };
+    if (communityDetail?.ID) {
+      joinCommunity(payload, communityDetail.ID);
+    }
   };
 
   return (
@@ -91,6 +124,19 @@ const Community: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 w-full items-start">
         <div className="flex flex-col gap-4 w-full">
+          {loadingPosts ? (
+            <div className="bg-white p-8 rounded-2xl border border-slate-200/80 text-center text-slate-400 text-sm font-medium">
+              Memuat postingan...
+            </div>
+          ) : posts.length > 0 ? (
+            posts.map((post) => (
+              <PostCard key={post.ID} {...post} />
+            ))
+          ) : (
+            <div className="bg-white p-8 rounded-2xl border border-slate-200/80 text-center text-slate-500 text-sm font-medium">
+              Belum ada postingan di komunitas ini. Jadilah yang pertama membuat post!
+            </div>
+          )}
         </div>
         
         <div className="flex flex-col gap-5 w-full sticky top-22">
@@ -111,7 +157,7 @@ const Community: React.FC = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-base text-slate-800 leading-none">
-                  {(communityDetail?.PostCount || 0).toLocaleString('id-ID')}
+                  {(posts.length || communityDetail?.PostCount || 0).toLocaleString('id-ID')}
                 </span>
                 <span className="text-[11px] font-medium text-slate-400 mt-1">Post</span>
               </div>
@@ -156,6 +202,6 @@ const Community: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Community;
