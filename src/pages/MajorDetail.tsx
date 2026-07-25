@@ -161,10 +161,10 @@ const MajorDetail: React.FC = () => {
                     >
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex items-center gap-3 min-w-0">
-                          {rev.UserData?.ProfilePicture ? (
+                          {rev.ProfilePicture ? (
                             <img 
-                              src={rev.UserData.ProfilePicture} 
-                              alt={rev.UserData.Username} 
+                              src={rev.ProfilePicture} 
+                              alt={rev.Username} 
                               className="w-10 h-10 rounded-xl object-cover border border-slate-200 bg-slate-50 shrink-0" 
                             />
                           ) : (
@@ -174,10 +174,10 @@ const MajorDetail: React.FC = () => {
                           )}
                           <div className="flex flex-col min-w-0">
                             <span className="text-sm font-bold text-slate-800 tracking-tight truncate">
-                              {rev.UserData?.Displayname || rev.UserData?.Username || 'Anonim'}
+                              {rev.Displayname || rev.Username || 'Anonim'}
                             </span>
                             <span className="text-[11px] text-slate-400 font-medium truncate">
-                              @{rev.UserData?.Username || 'anonymous'} • {formatDate(rev.CreatedAt)}
+                              @{rev.Username || 'anonymous'} • {formatDate(rev.CreatedAt)}
                             </span>
                           </div>
                         </div>

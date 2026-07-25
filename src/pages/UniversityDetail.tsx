@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { UniversityData } from "../types";
+import React, { useEffect, useState, useCallback } from "react";
+import { UniversityData, UniversityReview } from "../types";
 import Navbar from "../components/Navbar";
 import Leftbar from "../components/Leftbar";
 import { 
@@ -14,7 +14,9 @@ import {
   FaCommentDots
 } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
-import { getUniversityDetail } from "../services/universityService";
+import { getUniversityDetail, getUniversityReviews } from "../services/universityService";
+import CreateReview from "../components/CreateReview";
+import UniversityReviewSubmitForm from "../components/UniversityReviewSubmitForm";
 
 enum UniversityDetailMenu {
   OVERVIEW = "overview",
@@ -48,9 +50,67 @@ const StarRating: React.FC<{ stars: number }> = ({ stars }) => {
   );
 };
 
+const getTimeAgo = (dateInput: Date | string): string => {
+  const now = new Date();
+  const targetDate = new Date(dateInput);
+  const diff = now.getTime() - targetDate.getTime();
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (years > 0) return `${years} tahun yang lalu`;
+  if (months > 0) return `${months} bulan yang lalu`;
+  if (weeks > 0) return `${weeks} minggu yang lalu`;
+  if (days > 0) return `${days} hari yang lalu`;
+  if (hours > 0) return `${hours} jam yang lalu`;
+  if (minutes > 0) return `${minutes} menit yang lalu`;
+  return seconds <= 10 ? 'Baru saja' : `${seconds} detik yang lalu`;
+};
+
+const ReviewCard: React.FC<{ review: UniversityReview }> = ({ review }) => {
+  return (
+    <div className="bg-white p-5 border border-slate-200/80 rounded-2xl shadow-sm flex flex-col gap-3 hover:border-slate-300 transition-all duration-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <img
+            className="h-9 w-9 object-cover rounded-full bg-slate-100 ring-1 ring-slate-200"
+            src={review.ProfilePicture || "/assets/DefaultUser.png"}
+            alt={review.Username || "User"}
+          />
+          <div className="flex flex-col">
+            <span className="text-slate-800 text-sm font-bold tracking-tight">
+              {review.Displayname || review.Username || `User #${review.UserID}`}
+            </span>
+            <span className="text-slate-400 text-xs font-medium">
+              {getTimeAgo(review.CreatedAt)}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1 bg-amber-50 border border-amber-100/60 rounded-lg px-2.5 py-1">
+          <FaStar className="text-amber-500 text-sm" />
+          <span className="text-xs font-bold text-amber-700">{review.Stars}</span>
+        </div>
+      </div>
+
+      <p className="text-slate-600 font-medium text-sm leading-relaxed mt-1">
+        {review.Text}
+      </p>
+    </div>
+  );
+};
+
 const UniversityDetail: React.FC = () => {
   const [universityDetail, setUniversityDetail] = useState<UniversityData>();
+  const [reviews, setReviews] = useState<UniversityReview[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState<boolean>(false);
   const [selectedMenu, setSelectedMenu] = useState<UniversityDetailMenu>(UniversityDetailMenu.OVERVIEW);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
   const { slug } = useParams();
 
   useEffect(() => {
@@ -64,6 +124,25 @@ const UniversityDetail: React.FC = () => {
     }; 
     fetchData();
   }, [slug]); 
+
+  const fetchReviews = useCallback(async () => {
+    if (!universityDetail?.ID) return;
+    setLoadingReviews(true);
+    try {
+      const res = await getUniversityReviews(universityDetail.ID);
+      setReviews(res.data || res || []);
+    } catch (err) {
+      console.error("Failed to fetch reviews:", err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  }, [universityDetail?.ID]);
+
+  useEffect(() => {
+    if (selectedMenu === UniversityDetailMenu.REVIEWS && universityDetail?.ID) {
+      fetchReviews();
+    }
+  }, [selectedMenu, universityDetail?.ID, fetchReviews]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
@@ -137,7 +216,6 @@ const UniversityDetail: React.FC = () => {
           <div className="w-full bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm min-h-[300px]">
             {selectedMenu === UniversityDetailMenu.OVERVIEW ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-                
                 <div className="md:col-span-2 flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-colors">
                   <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100/40 shrink-0">
                     <FaBookOpen className="text-lg md:text-xl" />
@@ -198,20 +276,49 @@ const UniversityDetail: React.FC = () => {
                     </a>
                   </div>
                 </div>
-
               </div>
             ) : selectedMenu === UniversityDetailMenu.MAJORS ? (
               <div className="text-center py-12">
                 <p className="text-slate-400 font-medium text-sm">Daftar Program Studi belum tersedia.</p>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-slate-400 font-medium text-sm">Belum ada ulasan untuk universitas ini.</p>
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div>
+                    <h2 className="text-base font-bold text-slate-800">Ulasan Pengguna</h2>
+                    <p className="text-xs text-slate-400 font-medium">Pengalaman mahasiswa dan alumni di kampus ini</p>
+                  </div>
+                  <CreateReview onClick={() => setIsReviewModalOpen(true)} />
+                </div>
+
+                {loadingReviews ? (
+                  <div className="text-center py-12">
+                    <p className="text-slate-400 font-medium text-sm">Memuat ulasan...</p>
+                  </div>
+                ) : reviews.length > 0 ? (
+                  <div className="flex flex-col gap-4">
+                    {reviews.map((rev, index) => (
+                      <ReviewCard key={rev.ID || index} review={rev} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-slate-400 font-medium text-sm">Belum ada ulasan untuk universitas ini.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </main>
       </div>
+
+      {isReviewModalOpen && universityDetail?.ID && (
+        <UniversityReviewSubmitForm
+          universityId={universityDetail.ID}
+          onClose={() => setIsReviewModalOpen(false)}
+          onSuccess={fetchReviews}
+        />
+      )}
     </div>
   );
 }

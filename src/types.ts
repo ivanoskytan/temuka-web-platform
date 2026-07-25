@@ -57,7 +57,6 @@ export interface PostData {
     CreatedAt: Date
     UpdatedAt: Date
 }
-
 export interface PostCommentData {
     ID?: any
     Username: string
@@ -137,7 +136,10 @@ export interface MajorData {
 export interface UniversityReview {
     ID?: number
     UniversityID?: number
-    UserData: UserData
+    UserID: Number
+    Username: string
+    Displayname: string
+    ProfilePicture: string  
     Text: string
     Stars: number
     CreatedAt: Date
@@ -147,7 +149,10 @@ export interface UniversityReview {
 export interface MajorReview {
     ID?: number
     MajorID: number
-    UserData: UserData
+    UserID: Number
+    Username: string
+    Displayname: string
+    ProfilePicture: string  
     Text: string
     Stars: number
     CreatedAt: Date
@@ -174,3 +179,4 @@ export type GeneralFollowerListResponse = GeneralAPIResponse<FollowersData[]>
 export type GeneralUniversityListResponse = GeneralAPIResponse<UniversityData[]>
 export type GeneralMajorListResponse = GeneralAPIResponse<MajorData[]>
 export type GeneralSearchUserResponse = GeneralAPIResponse<UserSearchItem[]>
+export type GeneralUniversityReviewsResponse = GeneralAPIResponse<UniversityReview[]>

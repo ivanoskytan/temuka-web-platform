@@ -12,7 +12,7 @@ interface DropdownValue {
 interface SelectedOption {
     Logo: string
     Name: string
-    ID: number | null
+    ID: number 
 }
 
 const PostCustomDropdown: React.FC<DropdownValue> = ({ current_slug = null, setSelectedCommunity }) => {
@@ -20,7 +20,7 @@ const PostCustomDropdown: React.FC<DropdownValue> = ({ current_slug = null, setS
     const defaultOption = {
         Logo: "",
         Name: "Pilih komunitas",
-        ID: null
+        ID: 0
     };
 
     const [isOpen, setIsOpen] = useState(false);
@@ -85,7 +85,7 @@ const PostCustomDropdown: React.FC<DropdownValue> = ({ current_slug = null, setS
                 <div
                     key={idx}
                     onClick={() => handleSelect({
-                        ID: option.ID,
+                        ID: option.ID!,
                         Name: option.Name,
                         Logo: option.LogoPicture
                     })}

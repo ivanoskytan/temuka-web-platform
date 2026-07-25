@@ -17,18 +17,16 @@ export async function getUniversities() {
 }
 
 export async function addReview(payload: any) {
-    const res = await fetch(`${API_KEY}/api/review`, {
+    const res = await fetch(`${API_KEY}/api/university/review`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload)
     });
     return res.json();
 }
 
-export async function getUniversityReviews(id: number) {
-    const res = await fetch(`${API_KEY}/api/review/university/${id}`, {
+export async function getUniversityReviews(university_id: any) {
+    const res = await fetch(`${API_KEY}/api/university/review/${university_id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
