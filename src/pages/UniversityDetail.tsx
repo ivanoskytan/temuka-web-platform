@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { UniversityData, UniversityReview } from "../types";
+import { UniversityData, UniversityReview, UniversityMajorData } from "../types";
 import Navbar from "../components/Navbar";
 import Leftbar from "../components/Leftbar";
+import MajorCard from "../components/MajorCard";
 import { 
   FaStar, 
   FaBookOpen, 
@@ -15,6 +16,7 @@ import {
 } from "react-icons/fa6";
 import { useParams } from "react-router-dom";
 import { getUniversityDetail, getUniversityReviews } from "../services/universityService";
+import { getMajorsByUniversity } from "../services/majorService";
 import CreateReview from "../components/CreateReview";
 import UniversityReviewSubmitForm from "../components/UniversityReviewSubmitForm";
 
@@ -39,7 +41,7 @@ const StarRating: React.FC<{ stars: number }> = ({ stars }) => {
   );
 
   return (
-    <div className="flex gap-0.5 items-center bg-slate-50 border border-slate-100 rounded-xl px-3 py-1.5 shadow-sm shrink-0">
+    <div className="flex gap-0.5 items-center bg-slate-50 border border-slate-100 rounded-xl px-3 py-1.5 shadow-xs shrink-0">
       <span className="font-bold text-slate-700 text-sm mr-1.5 mt-0.5">{stars.toFixed(1)}</span>
       <div className="flex gap-0.5">
         {[...Array(fullStars)].map((_, index) => renderStar(100, `full-${index}`))}
@@ -74,7 +76,7 @@ const getTimeAgo = (dateInput: Date | string): string => {
 
 const ReviewCard: React.FC<{ review: UniversityReview }> = ({ review }) => {
   return (
-    <div className="bg-white p-5 border border-slate-200/80 rounded-2xl shadow-sm flex flex-col gap-3 hover:border-slate-300 transition-all duration-200">
+    <div className="bg-white p-5 border border-slate-200/80 rounded-2xl shadow-xs flex flex-col gap-3 hover:border-slate-300 transition-all duration-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <img
@@ -108,7 +110,9 @@ const ReviewCard: React.FC<{ review: UniversityReview }> = ({ review }) => {
 const UniversityDetail: React.FC = () => {
   const [universityDetail, setUniversityDetail] = useState<UniversityData>();
   const [reviews, setReviews] = useState<UniversityReview[]>([]);
+  const [majors, setMajors] = useState<UniversityMajorData[]>([]);
   const [loadingReviews, setLoadingReviews] = useState<boolean>(false);
+  const [loadingMajors, setLoadingMajors] = useState<boolean>(false);
   const [selectedMenu, setSelectedMenu] = useState<UniversityDetailMenu>(UniversityDetailMenu.OVERVIEW);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
   const { slug } = useParams();
@@ -138,11 +142,26 @@ const UniversityDetail: React.FC = () => {
     }
   }, [universityDetail?.ID]);
 
+  const fetchMajors = useCallback(async () => {
+    if (!universityDetail?.ID) return;
+    setLoadingMajors(true);
+    try {
+      const res = await getMajorsByUniversity(universityDetail.ID);
+      setMajors(res.data || res || []);
+    } catch (err) {
+      console.error("Failed to fetch majors:", err);
+    } finally {
+      setLoadingMajors(false);
+    }
+  }, [universityDetail?.ID]);
+
   useEffect(() => {
     if (selectedMenu === UniversityDetailMenu.REVIEWS && universityDetail?.ID) {
       fetchReviews();
+    } else if (selectedMenu === UniversityDetailMenu.MAJORS && universityDetail?.ID) {
+      fetchMajors();
     }
-  }, [selectedMenu, universityDetail?.ID, fetchReviews]);
+  }, [selectedMenu, universityDetail?.ID, fetchReviews, fetchMajors]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
@@ -152,7 +171,7 @@ const UniversityDetail: React.FC = () => {
         <Leftbar />
         
         <main className="w-full py-6 flex flex-col gap-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6 w-full">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6 w-full">
             <div className="flex gap-4 items-center min-w-0">
               <div className="h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center p-3 shrink-0">
                 {universityDetail?.Logo ? (
@@ -213,7 +232,7 @@ const UniversityDetail: React.FC = () => {
             </button>
           </div>
 
-          <div className="w-full bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm min-h-[300px]">
+          <div className="w-full bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs min-h-[300px]">
             {selectedMenu === UniversityDetailMenu.OVERVIEW ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
                 <div className="md:col-span-2 flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-colors">
@@ -278,9 +297,23 @@ const UniversityDetail: React.FC = () => {
                 </div>
               </div>
             ) : selectedMenu === UniversityDetailMenu.MAJORS ? (
-              <div className="text-center py-12">
-                <p className="text-slate-400 font-medium text-sm">Daftar Program Studi belum tersedia.</p>
-              </div>
+              loadingMajors ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[1, 2, 3, 4].map((n) => (
+                    <div key={n} className="h-36 bg-slate-100 rounded-2xl animate-pulse" />
+                  ))}
+                </div>
+              ) : majors.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {majors.map((major) => (
+                    <MajorCard key={major.ID} major={major} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-slate-400 font-medium text-sm">Daftar Program Studi belum tersedia.</p>
+                </div>
+              )
             ) : (
               <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -321,6 +354,6 @@ const UniversityDetail: React.FC = () => {
       )}
     </div>
   );
-}
+};
 
 export default UniversityDetail;

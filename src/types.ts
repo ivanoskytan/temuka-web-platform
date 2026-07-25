@@ -125,7 +125,21 @@ export interface MajorData {
     ID?: number
     Name: string
     Description: string
-    UniversityData: MajorUniversityData
+    UniversityName: string
+    UniversityLogo: string
+    TotalReviews?: number
+    Rating?: number | null
+    Reviews?: MajorReview[]
+    CreatedAt: Date
+    UpdatedAt: Date
+}
+
+export interface UniversityMajorData {
+    ID?: number
+    Name: string
+    Description: string
+    UniversityName: string
+    UniversityLogo: string
     TotalReviews?: number
     Rating?: number | null
     Reviews?: MajorReview[]

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Leftbar from '../components/Leftbar';
-import { useNavigate } from 'react-router';
+import MajorCard from '../components/MajorCard';
 import { MajorData } from '../types';
-import { FaSearch, FaStar, FaRegStar, FaCommentAlt, FaUniversity } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 import { getMajorList } from '../services/majorService';
 
 const Majors: React.FC = () => {
-  const navigate = useNavigate();
   const [majors, setMajors] = useState<MajorData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -17,11 +16,11 @@ const Majors: React.FC = () => {
       try {
         setIsLoading(true);
         const { data } = await getMajorList();
-        
         if (data && data.length > 0) {
           setMajors(data);
-        } 
+        }
       } catch (err) {
+        console.error(err);
       } finally {
         setIsLoading(false);
       }
@@ -29,21 +28,9 @@ const Majors: React.FC = () => {
     fetchMajors();
   }, []);
 
-  const filteredMajors = majors.filter((major) => 
+  const filteredMajors = majors.filter((major) =>
     major.Name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const renderStars = (rating: number | null) => {
-    const totalStars = 5;
-    const currentRating = rating || 0;
-    return (
-      <div className="flex items-center gap-0.5 text-amber-500 text-xs">
-        {[...Array(totalStars)].map((_, i) => (
-          i < currentRating ? <FaStar key={i} /> : <FaRegStar key={i} className="text-slate-300" />
-        ))}
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
@@ -74,50 +61,13 @@ const Majors: React.FC = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="h-32 bg-slate-200/60 rounded-2xl animate-pulse border border-slate-200/40" />
+                <div key={n} className="h-36 bg-slate-200/60 rounded-2xl animate-pulse border border-slate-200/40" />
               ))}
             </div>
           ) : filteredMajors.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredMajors.map((major) => (
-                <div 
-                  className="group bg-white p-5 border border-slate-200/80 rounded-2xl hover:border-indigo-500/40 cursor-pointer transition-all flex flex-col justify-between hover:shadow-md hover:shadow-slate-100/70 shadow-xs"
-                  key={major.ID}
-                  onClick={() => navigate(`/majors/${major.ID}`)}
-                >
-                  <div className="flex flex-col gap-1.5">
-                    {major.UniversityData ? (
-                      <span className="text-[10px] font-bold tracking-wider text-indigo-600 uppercase flex items-center gap-1">
-                        <FaUniversity className="text-[9px]" /> {major.UniversityData.Name}
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                        ID Universitas: #{major.ID}
-                      </span>
-                    )}
-                    
-                    <h2 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 leading-snug transition-colors">
-                      {major.Name}
-                    </h2>
-                  </div>
-
-                  <div className="flex items-center gap-4 mt-5 pt-3 border-t border-slate-100">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Rating</span>
-                      {renderStars(Number(major.Rating))}
-                    </div>
-                    
-                    <div className="w-px h-6 bg-slate-200" />
-
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Total Ulasan</span>
-                      <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                        <FaCommentAlt className="text-slate-300 text-[10px]" />
-                        {major.TotalReviews || 0} Ulasan
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <MajorCard key={major.ID} major={major} />
               ))}
             </div>
           ) : (

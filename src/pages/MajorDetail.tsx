@@ -83,13 +83,13 @@ const MajorDetail: React.FC = () => {
                   {major.Name}
                 </h1>
                 
-                {major.UniversityData && (
+                {/* {major.UniversityData && (
                   <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm mt-1 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl w-fit">
                     <FaUniversity className="text-indigo-500 text-base" />
                     <span className="text-slate-700">{major.UniversityData.Name}</span>
                     <span className="text-xs font-bold text-slate-300 px-1">ID: #{major.UniversityData.ID}</span>
                   </div>
-                )}
+                )} */}
               </div>
 
               {/* Baris Metrik */}
