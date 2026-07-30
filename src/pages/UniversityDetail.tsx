@@ -12,9 +12,10 @@ import {
   FaArrowUpRightFromSquare,
   FaPercent,
   FaGraduationCap,
-  FaCommentDots
+  FaCommentDots,
+  FaArrowLeft
 } from "react-icons/fa6";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getUniversityDetail, getUniversityReviews } from "../services/universityService";
 import { getMajorsByUniversity } from "../services/majorService";
 import CreateReview from "../components/CreateReview";
@@ -115,7 +116,9 @@ const UniversityDetail: React.FC = () => {
   const [loadingMajors, setLoadingMajors] = useState<boolean>(false);
   const [selectedMenu, setSelectedMenu] = useState<UniversityDetailMenu>(UniversityDetailMenu.OVERVIEW);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
+  
   const { slug } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -164,13 +167,28 @@ const UniversityDetail: React.FC = () => {
   }, [selectedMenu, universityDetail?.ID, fetchReviews, fetchMajors]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
+    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 font-sans antialiased">
       <Navbar />
       
       <div className="pt-16 max-w-[1600px] w-full mx-auto grid grid-cols-1 md:grid-cols-[240px_1fr] px-4 gap-6 items-start">
         <Leftbar />
         
         <main className="w-full py-6 flex flex-col gap-6">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-600 hover:text-slate-900 transition-all shadow-2xs group shrink-0"
+              title="Kembali"
+            >
+              <FaArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            </button>
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <span>Eksplorasi</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300" />
+              <span className="text-indigo-600">Detail Universitas</span>
+            </div>
+          </div>
+
           <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6 w-full">
             <div className="flex gap-4 items-center min-w-0">
               <div className="h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center p-3 shrink-0">

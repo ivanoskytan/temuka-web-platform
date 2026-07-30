@@ -74,7 +74,6 @@ const MajorDetail: React.FC = () => {
               </div>
             </div>
 
-            {/* Kartu Informasi Utama */}
             <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm relative overflow-hidden w-full">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
               
