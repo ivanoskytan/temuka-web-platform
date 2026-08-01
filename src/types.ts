@@ -86,6 +86,7 @@ export interface UserDetailData {
     Desc?: string
     Email?: string
     ProfilePicture?: string
+    SocialPoint?: number
     Followings?: number[]
     Followers?: number[]
 }
