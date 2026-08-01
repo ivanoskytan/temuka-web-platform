@@ -17,6 +17,7 @@ import MajorList from './pages/Majors';
 import MajorDetail from './pages/MajorDetail';
 import RouteWrapper from './components/RouteWrapper';
 import CommunitySubmit from './pages/CommunitySubmit';
+import UserCommunities from './pages/UserCommunities';
 
 const App: React.FC = () => {
   return (
@@ -92,6 +93,14 @@ const App: React.FC = () => {
           element={
             <RouteWrapper type="protected">
               <Communities />
+            </RouteWrapper>
+          }
+        />
+        <Route
+          path="/communities/user"
+          element={
+            <RouteWrapper type="protected">
+              <UserCommunities />
             </RouteWrapper>
           }
         />

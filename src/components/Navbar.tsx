@@ -150,7 +150,7 @@ const Navbar: React.FC = () => {
         </button>
 
         <Link 
-          to={`/communities/${Number(user?.id)}`}
+          to={`/communities/user`}
           className="p-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
         >
           <FaLayerGroup className="text-xl" />
