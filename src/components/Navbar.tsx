@@ -130,7 +130,7 @@ const Navbar: React.FC = () => {
 
               <div className="flex flex-col gap-0.5">
                 <Link
-                  to={`/settings`}
+                  to={`/profile/${user?.id}`}
                   onClick={() => setIsProfileMenuOpen(false)}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                 >
