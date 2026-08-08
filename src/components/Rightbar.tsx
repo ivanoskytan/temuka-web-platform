@@ -58,8 +58,8 @@ const Rightbar: React.FC = () => {
         const res = await getUserDetail(user.id as number);
         const userData = res?.data || res;
 
-        const name = userData?.username || userData?.displayname || userData?.name || user?.email?.split('@')[0] || 'Pengguna';
-        const uniName = userData?.University?.name || userData?.university_name || userData?.university?.name || null;
+        const name = userData?.Username || 'Pengguna';
+        const uniName = userData?.University?.Name || null;
 
         setUserDisplayName(name);
         setUserUniversityName(uniName);
