@@ -9,8 +9,16 @@ export async function createPost(payload: any) {
     return res.json();
 }
 
-export async function getTimelinePosts(id: number) {
-    const res = await fetch(`${API_SERVICE_KEY}/api/post/timeline/${id}`, {
+export async function getTimelinePosts(user_id: number) {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/timeline/${user_id}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+    return res.json();
+}
+
+export async function getUserPosts(user_id: number) {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/user/${user_id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });

@@ -73,6 +73,14 @@ const App: React.FC = () => {
           }
         />
         <Route
+          path="/profile/:id"
+          element={
+            <RouteWrapper type="protected">
+              <Profile />
+            </RouteWrapper>
+          }
+        />
+        <Route
           path="/universities"
           element={
             <RouteWrapper type="protected">

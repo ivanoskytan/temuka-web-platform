@@ -38,6 +38,7 @@ export interface CommunityCardData {
 export interface CommunityData {
   ID?: any;
   Name: string;
+  Slug: string;
   Description: string;
   Rules: string;
   PostCount: number;
@@ -90,6 +91,7 @@ export interface UserDetailData {
   SocialPoint?: number;
   Followings?: number[];
   Followers?: number[];
+  CreatedAt?: Date;
 }
 
 export interface UserAuthData {

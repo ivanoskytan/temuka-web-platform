@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router';
 import { getPostDetail } from '../services/postService';
 import { FaCircleChevronLeft } from "react-icons/fa6";
 import { BiSolidDownvote, BiSolidUpvote } from 'react-icons/bi';
-import { FaComment } from "react-icons/fa";
+import { FaComment, FaUser } from "react-icons/fa";
 import useAuthStore from '../store/authStore';
 import { addComment } from '../services/commentService';
 
@@ -111,11 +111,17 @@ const Post: React.FC = () => {
 
           <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm flex-1 max-w-3xl">
             <div className="flex items-center gap-2 mb-4">
-              <img
-                className="h-8 w-8 object-cover rounded-full ring-1 ring-slate-200 bg-slate-100"
-                src={postData?.user?.ProfilePicture || "/assets/DefaultUser.png"}
-                alt="profile"
-              />
+              {postData?.user?.ProfilePicture ? (
+                <img
+                  className="h-8 w-8 object-cover rounded-full ring-1 ring-slate-200 bg-slate-100"
+                  src={postData?.user?.ProfilePicture}
+                  alt="profile"
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                  <FaUser className="text-sm" />
+                </div>
+              )}
               <span className="text-sm font-bold text-slate-800 tracking-tight">
                 {postData?.user?.Username || "Memuat..."}
               </span>

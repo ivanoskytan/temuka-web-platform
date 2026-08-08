@@ -80,14 +80,14 @@ const Settings: React.FC = () => {
     }
   };
 
-  const getProfileImageSrc = () => {
+  const getProfileImageSrc = (): string | null => {
     if (previewUrl) return previewUrl;
     if (userdata?.ProfilePicture) {
       return userdata.ProfilePicture.startsWith('http') 
         ? userdata.ProfilePicture 
         : `${publicFolder}${userdata.ProfilePicture}`;
     }
-    return '/assets/DefaultUser.png';
+    return null;
   };
 
   const formatDate = (dateString?: string) => {
@@ -131,6 +131,7 @@ const Settings: React.FC = () => {
   };
 
   const createdAt = userdata?.CreatedAt || userdata?.created_at;
+  const profileSrc = getProfileImageSrc();
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
@@ -144,15 +145,15 @@ const Settings: React.FC = () => {
             
             <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs flex flex-col sm:flex-row items-center sm:items-start gap-6">
               <div className="relative group w-28 h-28 shrink-0">
-                <div className="w-full h-full rounded-full overflow-hidden border-4 border-slate-50 shadow-xs ring-1 ring-slate-200 bg-slate-100 flex items-center justify-center">
-                  {getProfileImageSrc() ? (
+                <div className="w-full h-full rounded-full overflow-hidden border-4 border-slate-50 shadow-xs ring-1 ring-slate-200 bg-slate-100 flex items-center justify-center text-slate-400">
+                  {profileSrc ? (
                     <img
                       className="w-full h-full object-cover"
-                      src={getProfileImageSrc()}
+                      src={profileSrc}
                       alt="Foto Profil"
                     />
                   ) : (
-                    <FaUser className="text-slate-400 text-3xl" />
+                    <FaUser className="text-4xl text-slate-400" />
                   )}
                 </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BiSolidUpvote, BiSolidDownvote } from "react-icons/bi";
-import { FaCommentDots } from "react-icons/fa";
+import { FaCommentDots, FaUser } from "react-icons/fa";
 import { MdSaveAlt } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import { PostData, UserDetailData } from '../types';
@@ -16,11 +16,7 @@ const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upv
         const { data } = await getUserDetail(UserID);
         setPostUserdata(data);
       } catch (err) {
-        if (UserID === 101) {
-          setPostUserdata({ Username: "budi_developer", ProfilePicture: "" });
-        } else if (UserID === 102) {
-          setPostUserdata({ Username: "siti_design", ProfilePicture: "" });
-        }
+        console.error('Error fetching user data:', err);
       }
     };
     fetchData();
@@ -71,17 +67,23 @@ const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upv
       onClick={() => navigate(`/post/${ID}`)}
     >
       <div className="flex items-center gap-2">
-        <img
-          className="h-8 w-8 object-cover rounded-full bg-slate-100 ring-1 ring-slate-200"
-          src={postUserdata?.ProfilePicture || "/assets/DefaultUser.png"}
-          alt="profile"
-        />
+        {postUserdata?.ProfilePicture ? (
+            <img
+              className="h-8 w-8 object-cover rounded-full bg-slate-100 ring-1 ring-slate-200"
+              src={postUserdata.ProfilePicture}
+              alt="profile"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+              <FaUser className="text-sm" />
+            </div>
+          )}
         <Link 
-          to={`/community`}
+          to={`/profile/${UserID}`}
           onClick={(e) => e.stopPropagation()}
           className='text-slate-800 text-sm font-bold hover:underline tracking-tight'
         >
-          {postUserdata?.Username || `User #${UserID}`}
+          {postUserdata?.Username}
         </Link>
         <span className="text-slate-400 text-xs font-medium">
           • {getTimeAgo(CreatedAt)}

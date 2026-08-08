@@ -27,9 +27,9 @@ export async function showReplies(payload: any) {
     return res.json();
 }
 
-export async function deletePost(id: number) {
-    const res = await fetch(`${API_SERVICE_KEY}/api/post/${id}`, {
-        method: 'DELETE',
+export async function getUserComments(user_id: number) {
+    const res = await fetch(`${API_SERVICE_KEY}/api/comment/user/${user_id}`, {
+        method: 'GET',
         headers: getAuthHeaders(),
     });
     return res.json();
