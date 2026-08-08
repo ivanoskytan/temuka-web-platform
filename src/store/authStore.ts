@@ -9,8 +9,8 @@ interface User {
 }
 
 interface JwtCustomPayload extends JwtPayload {
-  id: number
-  email: string
+  id: number;
+  email: string;
 }
 
 interface AuthState {

@@ -1,25 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import CreatePost from './CreatePost';
-import RecommendationSection from './RecommendationSection';
+import React, { useState } from 'react';
 import { 
   FaChevronDown, 
-  FaGraduationCap, 
-  FaBookOpen, 
-  FaNewspaper, 
   FaHatCowboy, 
   FaUser, 
   FaXmark, 
   FaCheck, 
   FaLock 
 } from "react-icons/fa6";
-import { SuggestionItemData } from '../types';
-import { 
-  getPostRecommendations, 
-  getMajorRecommendations, 
-  getUniversityRecommendations 
-} from '../services/recommendationService';
-import { getUserDetail } from '../services/userService';
-import useAuthStore from '../store/authStore';
 
 export interface IdentityOption {
   isAnonymous: boolean;
@@ -28,99 +15,20 @@ export interface IdentityOption {
   universityOrigin?: string;
 }
 
-const Rightbar: React.FC = () => {
-  const { user } = useAuthStore();
+interface IdentitySelectorProps {
+  userDisplayName?: string;
+  userUniversityName?: string | null;
+  activeIdentity: IdentityOption;
+  onIdentityChange: (identity: IdentityOption) => void;
+}
 
-  const [userDisplayName, setUserDisplayName] = useState<string>('Pengguna');
-  const [userUniversityName, setUserUniversityName] = useState<string | null>(null);
-
-  const [activeIdentity, setActiveIdentity] = useState<IdentityOption>({
-    isAnonymous: false,
-    label: user?.email ? user.email.split('@')[0] : 'Pengguna',
-    sublabel: 'Nama dan profil publik Anda akan terlihat',
-  });
-
+const IdentitySelector: React.FC<IdentitySelectorProps> = ({
+  userDisplayName = 'Pengguna',
+  userUniversityName,
+  activeIdentity,
+  onIdentityChange,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const [posts, setPosts] = useState<SuggestionItemData[]>([]);
-  const [majors, setMajors] = useState<SuggestionItemData[]>([]);
-  const [universities, setUniversities] = useState<SuggestionItemData[]>([]);
-
-  const [loadingPosts, setLoadingPosts] = useState<boolean>(true);
-  const [loadingMajors, setLoadingMajors] = useState<boolean>(true);
-  const [loadingUniversities, setLoadingUniversities] = useState<boolean>(true);
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const fetchUserData = async () => {
-      try {
-        const res = await getUserDetail(user.id as number);
-        const userData = res?.data || res;
-
-        const name = userData?.username || userData?.displayname || userData?.name || user?.email?.split('@')[0] || 'Pengguna';
-        const uniName = userData?.University?.name || userData?.university_name || userData?.university?.name || null;
-
-        setUserDisplayName(name);
-        setUserUniversityName(uniName);
-
-        if (uniName) {
-          setActiveIdentity({
-            isAnonymous: true,
-            label: `Mahasiswa ${uniName}`,
-            sublabel: 'Nama dan profil disembunyikan, hanya institusi yang muncul',
-            universityOrigin: uniName,
-          });
-        } else {
-          setActiveIdentity({
-            isAnonymous: false,
-            label: name,
-            sublabel: 'Nama dan profil publik Anda akan terlihat',
-          });
-        }
-      } catch (err) {
-        console.error('Failed to fetch user details:', err);
-      }
-    };
-
-    fetchUserData();
-  }, [user?.id, user?.email]);
-
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      try {
-        setLoadingPosts(true);
-        const res = await getPostRecommendations();
-        setPosts(res?.data?.Items || []);
-      } catch (err) {
-        console.error('Failed to fetch post recommendations:', err);
-      } finally {
-        setLoadingPosts(false);
-      }
-
-      try {
-        setLoadingMajors(true);
-        const res = await getMajorRecommendations();
-        setMajors(res?.data?.Items || []);
-      } catch (err) {
-        console.error('Failed to fetch major recommendations:', err);
-      } finally {
-        setLoadingMajors(false);
-      }
-
-      try {
-        setLoadingUniversities(true);
-        const res = await getUniversityRecommendations();
-        setUniversities(res?.data?.Items || []);
-      } catch (err) {
-        console.error('Failed to fetch university recommendations:', err);
-      } finally {
-        setLoadingUniversities(false);
-      }
-    };
-
-    fetchRecommendations();
-  }, []);
 
   const realIdentity: IdentityOption = {
     isAnonymous: false,
@@ -130,7 +38,7 @@ const Rightbar: React.FC = () => {
 
   const anonymousIdentity: IdentityOption = {
     isAnonymous: true,
-    label: userUniversityName ? `Mahasiswa ${userUniversityName}` : 'Anonim',
+    label: `Mahasiswa ${userUniversityName || ''}`,
     sublabel: 'Nama dan profil disembunyikan, hanya institusi yang muncul',
     universityOrigin: userUniversityName || undefined,
   };
@@ -138,7 +46,7 @@ const Rightbar: React.FC = () => {
   const isEligibleForAnon = Boolean(userUniversityName);
 
   return (
-    <div className="hidden lg:flex flex-col gap-5 w-full sticky top-22 py-6">
+    <>
       <div 
         onClick={() => setIsModalOpen(true)}
         className="flex justify-between items-center gap-3 bg-white border border-slate-200/80 shadow-xs p-4 rounded-2xl hover:bg-slate-50 cursor-pointer transition-all active:scale-[0.99]"
@@ -186,7 +94,7 @@ const Rightbar: React.FC = () => {
             <div className="p-4 flex flex-col gap-3">
               <div
                 onClick={() => {
-                  setActiveIdentity(realIdentity);
+                  onIdentityChange(realIdentity);
                   setIsModalOpen(false);
                 }}
                 className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition-all ${
@@ -216,7 +124,7 @@ const Rightbar: React.FC = () => {
               <div
                 onClick={() => {
                   if (isEligibleForAnon) {
-                    setActiveIdentity(anonymousIdentity);
+                    onIdentityChange(anonymousIdentity);
                     setIsModalOpen(false);
                   }
                 }}
@@ -260,37 +168,8 @@ const Rightbar: React.FC = () => {
           </div>
         </div>
       )}
-
-      <CreatePost activeIdentity={activeIdentity} />
-
-      <RecommendationSection
-        title="Rekomendasi Post"
-        icon={<FaNewspaper />}
-        items={posts}
-        loading={loadingPosts}
-        emptyText="Tidak ada rekomendasi post saat ini."
-        getItemLink={(item) => item.Slug ? `/posts/${item.Slug}` : `/posts/${item.ID}`}
-      />
-
-      <RecommendationSection
-        title="Rekomendasi Jurusan"
-        icon={<FaBookOpen />}
-        items={majors}
-        loading={loadingMajors}
-        emptyText="Tidak ada rekomendasi jurusan saat ini."
-        getItemLink={(item) => item.Slug ? `/majors/${item.Slug}` : `/majors/${item.ID}`}
-      />
-
-      <RecommendationSection
-        title="Rekomendasi Universitas"
-        icon={<FaGraduationCap />}
-        items={universities}
-        loading={loadingUniversities}
-        emptyText="Tidak ada rekomendasi universitas saat ini."
-        getItemLink={(item) => item.Slug ? `/universities/${item.Slug}` : `/universities/${item.ID}`}
-      />
-    </div>
+    </>
   );
 };
 
-export default Rightbar;
+export default IdentitySelector;

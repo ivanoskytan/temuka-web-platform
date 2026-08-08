@@ -3,8 +3,8 @@ import PostCustomDropdown from './PostCustomDropdown';
 import { createPost } from '../services/postService';
 import { getCommunityDetail } from '../services/communityService';
 import useAuthStore from '../store/authStore';
-import { useNavigate, useParams } from 'react-router';
-import { FaArrowLeft } from 'react-icons/fa6';
+import { useNavigate, useParams, useLocation } from 'react-router';
+import { FaArrowLeft, FaHatCowboy, FaUser } from 'react-icons/fa6';
 
 enum PostTypeOption {
   Text = "text",
@@ -13,10 +13,28 @@ enum PostTypeOption {
   AMA = "ama",
 }
 
+export interface IdentityOption {
+  isAnonymous: boolean;
+  label: string;
+  sublabel: string;
+  universityOrigin?: string;
+}
+
 const PostSubmitForm: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useAuthStore((state) => state.user);
   const { slug } = useParams();
+
+  const passedIdentity = (location.state as { activeIdentity?: IdentityOption })?.activeIdentity;
+
+  const [activeIdentity] = useState<IdentityOption>(
+    passedIdentity || {
+      isAnonymous: false,
+      label: user?.email ? user.email.split('@')[0] : 'Pengguna',
+      sublabel: 'Nama dan profil publik Anda akan terlihat',
+    }
+  );
 
   const [option, setOption] = useState<PostTypeOption>(PostTypeOption.Text);
   const [selectedCommunity, setSelectedCommunity] = useState<number | null>(null);
@@ -52,6 +70,8 @@ const PostSubmitForm: React.FC = () => {
       title: title.trim(),
       description: description.trim(),
       community_id: selectedCommunity,
+      is_anonymous: activeIdentity.isAnonymous,
+      university_origin: activeIdentity.universityOrigin || null,
     };
 
     try {
@@ -95,13 +115,26 @@ const PostSubmitForm: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs w-full overflow-hidden flex flex-col">
-        <div className="px-6 pt-6 pb-4 border-b border-slate-100">
-          <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
-            Buat Postingan Baru
-          </h1>
-          <p className="text-xs md:text-sm font-medium text-slate-400 mt-1">
-            Bagikan pemikiran, pertanyaan, atau diskusi dengan anggota komunitas.
-          </p>
+        <div className="px-6 pt-6 pb-4 border-b border-slate-100 flex justify-between items-start gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
+              Buat Postingan Baru
+            </h1>
+            <p className="text-xs md:text-sm font-medium text-slate-400 mt-1">
+              Bagikan pemikiran, pertanyaan, atau diskusi dengan anggota komunitas.
+            </p>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200/80 rounded-xl shrink-0">
+            {activeIdentity.isAnonymous ? (
+              <FaHatCowboy className="text-indigo-600 text-sm" />
+            ) : (
+              <FaUser className="text-slate-500 text-xs" />
+            )}
+            <span className="text-xs font-semibold text-slate-700">
+              {activeIdentity.label}
+            </span>
+          </div>
         </div>
 
         <div className="p-6 flex flex-col gap-6">
