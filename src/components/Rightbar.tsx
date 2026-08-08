@@ -30,7 +30,6 @@ const Rightbar: React.FC = () => {
         setLoadingPosts(false);
       }
 
-      // Fetch Major Recommendations
       try {
         setLoadingMajors(true);
         const res = await getMajorRecommendations();
@@ -41,7 +40,6 @@ const Rightbar: React.FC = () => {
         setLoadingMajors(false);
       }
 
-      // Fetch University Recommendations
       try {
         setLoadingUniversities(true);
         const res = await getUniversityRecommendations();

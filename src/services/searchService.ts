@@ -2,8 +2,8 @@ import { INSIGHT_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function getSuggestions(q?: string, contextId?: string) {
     const queryParams: Record<string, string> = {};
-    if (q != undefined) queryParams.q = q;
-    if (contextId != undefined) queryParams.contextId = contextId;
+    if (q !== undefined) queryParams.q = q;
+    if (contextId !== undefined) queryParams.contextId = contextId;
 
     const params = new URLSearchParams(queryParams).toString();
     const url = `${INSIGHT_SERVICE_KEY}/api/search/suggestions${params ? `?${params}` : ''}`;
