@@ -1,7 +1,7 @@
-import { API_KEY, getAuthHeaders } from ".";
+import { API_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function uploadFile(payload: any) {
-    const res = await fetch(`${API_KEY}/api/file`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/file`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)

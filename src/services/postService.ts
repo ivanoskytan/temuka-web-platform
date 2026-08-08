@@ -1,7 +1,7 @@
-import { API_KEY, getAuthHeaders } from ".";
+import { API_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function createPost(payload: any) {
-    const res = await fetch(`${API_KEY}/api/post`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -10,7 +10,7 @@ export async function createPost(payload: any) {
 }
 
 export async function getTimelinePosts(id: number) {
-    const res = await fetch(`${API_KEY}/api/post/timeline/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/timeline/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -18,7 +18,7 @@ export async function getTimelinePosts(id: number) {
 }
 
 export async function likePost(payload: any, id: number) {
-    const res = await fetch(`${API_KEY}/api/post/like/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/like/${id}`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -27,7 +27,7 @@ export async function likePost(payload: any, id: number) {
 }
 
 export async function deletePost(id: number) {
-    const res = await fetch(`${API_KEY}/api/post/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
     });
@@ -35,7 +35,7 @@ export async function deletePost(id: number) {
 }
 
 export async function updatePost(id: number, payload: any) {
-    const res = await fetch(`${API_KEY}/api/post/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -44,7 +44,7 @@ export async function updatePost(id: number, payload: any) {
 }
 
 export async function getPostDetail(id: number) {
-    const res = await fetch(`${API_KEY}/api/post/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });

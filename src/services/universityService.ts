@@ -1,7 +1,7 @@
-import { API_KEY, getAuthHeaders } from ".";
+import { API_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function getUniversityDetail(slug: string) {
-    const res = await fetch(`${API_KEY}/api/university/${slug}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/university/${slug}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -9,7 +9,7 @@ export async function getUniversityDetail(slug: string) {
 }
 
 export async function getUniversities() {
-    const res = await fetch(`${API_KEY}/api/university`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/university`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -17,7 +17,7 @@ export async function getUniversities() {
 }
 
 export async function addReview(payload: any) {
-    const res = await fetch(`${API_KEY}/api/university/review`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/university/review`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -26,7 +26,7 @@ export async function addReview(payload: any) {
 }
 
 export async function getUniversityReviews(university_id: any) {
-    const res = await fetch(`${API_KEY}/api/university/review/${university_id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/university/review/${university_id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });

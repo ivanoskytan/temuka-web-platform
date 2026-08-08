@@ -1,7 +1,7 @@
-import { API_KEY, getAuthHeaders } from ".";
+import { API_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function createMajor(payload: any) {
-    const res = await fetch(`${API_KEY}/api/major`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/major`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -12,7 +12,7 @@ export async function createMajor(payload: any) {
 }
 
 export async function getMajorDetail(id: string) {
-    const res = await fetch(`${API_KEY}/api/major/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/major/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -20,7 +20,7 @@ export async function getMajorDetail(id: string) {
 }
 
 export async function getMajorList() {
-    const res = await fetch(`${API_KEY}/api/major`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/major`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -28,18 +28,16 @@ export async function getMajorList() {
 }
 
 export async function addMajorReview(payload: any) {
-    const res = await fetch(`${API_KEY}/api/major/review`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/major/review`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload)
     });
     return res.json();
 }
 
 export async function getMajorsByUniversity(universityId: number) {
-    const res = await fetch(`${API_KEY}/api/major/university/${universityId}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/major/university/${universityId}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });

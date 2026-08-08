@@ -1,5 +1,6 @@
-export const API_KEY = process.env.REACT_APP_API_SERVICE;
-export const WEBSOCKET_KEY = process.env.REACT_APP_WEBSOCKET_SERVICE;
+export const API_SERVICE_KEY = process.env.REACT_APP_API_SERVICE;
+export const WEBSOCKET_SERVICE_KEY = process.env.REACT_APP_WEBSOCKET_SERVICE;
+export const INSIGHT_SERVICE_KEY = process.env.REACT_APP_INSIGHT_SERVICE;
 
 export function getToken() {
     if (typeof window !== 'undefined') {
@@ -8,7 +9,7 @@ export function getToken() {
 }
 
 export function getFileStorage() {
-    const fileStorage = API_KEY + "/images/";
+    const fileStorage = API_SERVICE_KEY + "/images/";
     return fileStorage;
 }
 

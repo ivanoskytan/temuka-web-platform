@@ -1,4 +1,4 @@
-import { API_KEY, WEBSOCKET_KEY, getAuthHeaders } from ".";
+import { API_SERVICE_KEY, WEBSOCKET_SERVICE_KEY, getAuthHeaders } from ".";
 
 export interface WSMessagePayload {
     conversation_id: number;
@@ -18,7 +18,7 @@ export function connectWebSocket(
     onMessageReceived: (message: any) => void
 ) {
     const token = localStorage.getItem('token') || '';
-    const wsUrl = `${WEBSOCKET_KEY}/api/chat/ws?conversation_id=${conversationID}&user_id=${userID}&token=${encodeURIComponent(token)}`;
+    const wsUrl = `${WEBSOCKET_SERVICE_KEY}/api/chat/ws?conversation_id=${conversationID}&user_id=${userID}&token=${encodeURIComponent(token)}`;
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {
@@ -58,7 +58,7 @@ export function connectWebSocket(
 }
 
 export async function createConversation(payload: any) {
-    const res = await fetch(`${API_KEY}/api/chat`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/chat`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -67,7 +67,7 @@ export async function createConversation(payload: any) {
 }
 
 export async function getConversationsByUserID(user_id: number) {
-    const res = await fetch(`${API_KEY}/api/chat/all/${user_id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/chat/all/${user_id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -75,7 +75,7 @@ export async function getConversationsByUserID(user_id: number) {
 }
 
 export async function getConversationDetailByID(id: number) {
-    const res = await fetch(`${API_KEY}/api/chat/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/chat/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -83,7 +83,7 @@ export async function getConversationDetailByID(id: number) {
 }
 
 export async function addMessage(payload: any) {
-    const res = await fetch(`${API_KEY}/api/chat/message`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/chat/message`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -92,7 +92,7 @@ export async function addMessage(payload: any) {
 }
 
 export async function addParticipant(payload: any) {
-    const res = await fetch(`${API_KEY}/api/chat/participant`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/chat/participant`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -101,7 +101,7 @@ export async function addParticipant(payload: any) {
 }
 
 export async function deleteConversation(id: number) {
-    const res = await fetch(`${API_KEY}/api/chat/user`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/chat/user`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
     });

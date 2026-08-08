@@ -1,7 +1,7 @@
-import { API_KEY } from ".";
+import { API_SERVICE_KEY } from ".";
 
 export async function loginUser(payload: any) {
-    return fetch(`${API_KEY}/api/auth/login`, {
+    return fetch(`${API_SERVICE_KEY}/api/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -11,7 +11,7 @@ export async function loginUser(payload: any) {
 }
 
 export async function registerUser(payload: any) {
-    return fetch(`${API_KEY}/api/auth/register`, {
+    return fetch(`${API_SERVICE_KEY}/api/auth/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -21,7 +21,7 @@ export async function registerUser(payload: any) {
 }
 
 export async function resetPassword(payload: any, id: number) {
-    return fetch(`${API_KEY}/api/auth/resetPassword/${id}`, {
+    return fetch(`${API_SERVICE_KEY}/api/auth/resetPassword/${id}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

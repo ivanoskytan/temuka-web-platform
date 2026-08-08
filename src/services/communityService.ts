@@ -1,7 +1,7 @@
-import { API_KEY, getAuthHeaders } from ".";
+import { API_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function createCommunity(payload: any) {
-    const res = await fetch(`${API_KEY}/api/community/create`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/community/create`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -10,7 +10,7 @@ export async function createCommunity(payload: any) {
 }
 
 export async function getCommunityDetail(slug: string) {
-    const res = await fetch(`${API_KEY}/api/community/${slug}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/community/${slug}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -18,7 +18,7 @@ export async function getCommunityDetail(slug: string) {
 }
 
 export async function getCommunities() {
-    const res = await fetch(`${API_KEY}/api/community`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/community`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -26,7 +26,7 @@ export async function getCommunities() {
 }
 
 export async function joinCommunity(payload: any, id: number) {
-    const res = await fetch(`${API_KEY}/api/community/join/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/community/join/${id}`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
@@ -35,7 +35,7 @@ export async function joinCommunity(payload: any, id: number) {
 }
 
 export async function getCommunityPosts(id: number) {
-    const res = await fetch(`${API_KEY}/api/community/post/${id}`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/community/post/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -43,7 +43,7 @@ export async function getCommunityPosts(id: number) {
 }
 
 export async function getUserJoinedCommunities(payload: any) {
-    const res = await fetch(`${API_KEY}/api/community/user`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/community/user`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
