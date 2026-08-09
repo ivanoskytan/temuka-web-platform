@@ -4,6 +4,7 @@ import { FaHome, FaLayerGroup, FaUniversity } from "react-icons/fa";
 import { IoSettings, IoSchool } from "react-icons/io5";
 import { getUserJoinedCommunities } from '../services/communityService';
 import useAuthStore from '../store/authStore';
+import CreateCommunity from './CreateCommunity';
 
 interface CommunityItem {
   ID?: number;
@@ -60,7 +61,7 @@ const Leftbar: React.FC = () => {
   ];
 
   return (
-    <div className="hidden md:flex flex-col gap-8 w-full sticky top-22 py-6">
+    <div className="hidden md:flex flex-col gap-6 w-full sticky top-22 py-6">
       <nav className="flex flex-col gap-1.5" aria-label="Main Navigation">
         {mainNavigation.map((item) => {
           const Icon = item.icon;
@@ -73,6 +74,7 @@ const Leftbar: React.FC = () => {
         })}
       </nav>
 
+      <CreateCommunity />
       <hr className="border-slate-200/80 mx-2" />
 
       <div className="flex flex-col gap-3">
