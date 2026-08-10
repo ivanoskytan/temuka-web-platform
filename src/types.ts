@@ -38,16 +38,35 @@ export interface CommunityCardData {
   isJoining?: boolean;
 }
 
+export interface CommunityRule {
+  ID?: any;
+  CommunityID?: any;
+  Title?: string;
+  Description?: string;
+
+  CreatedAt?: Date;
+  UpdatedAt?: Date;
+}
+
 export interface CommunityData {
   ID?: any;
   Name: string;
   Slug: string;
   Description: string;
-  Rules: string;
+  CommunityRules?: CommunityRule[];
   PostCount: number;
   MemberCount: number;
   LogoPicture: string;
   CoverPicture: string;
+}
+
+export interface ModeratorData {
+  ID?: any;
+  UserID: number;
+  Username: string;
+  ProfilePicture: string;
+  SocialPoint: number;
+  CreatedAt: Date;
 }
 
 export interface PostData {

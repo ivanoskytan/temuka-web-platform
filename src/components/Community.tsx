@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { RiTeamLine } from "react-icons/ri";
 import { GrNotes } from "react-icons/gr";
 import { TbMessageCircleQuestion } from "react-icons/tb";
-import { FaChevronDown, FaPlus, FaCheck, FaXmark } from "react-icons/fa6";
+import { FaChevronDown, FaPlus, FaCheck, FaXmark, FaStar, FaUser } from "react-icons/fa6";
 import { getCommunityDetail, joinCommunity, getCommunityPosts, getUserJoinedCommunities } from "../services/communityService";
-import { CommunityData, PostData } from "../types";
+import { getModeratorsByCommunity } from "../services/moderatorService";
+import { CommunityData, PostData, ModeratorData } from "../types";
 import useAuthStore from "../store/authStore";
 import { useNavigate, useParams } from "react-router-dom";
 import PostCard from "../components/PostCard"; 
@@ -17,6 +18,12 @@ const Community: React.FC = () => {
   const [showJoinModal, setShowJoinModal] = useState<boolean>(false);
   const [isJoined, setIsJoined] = useState<boolean>(false);
   
+  const [moderators, setModerators] = useState<ModeratorData[]>([]);
+  const [loadingModerators, setLoadingModerators] = useState<boolean>(false);
+  const [isRulesOpen, setIsRulesOpen] = useState<boolean>(false);
+  const [isModsOpen, setIsModsOpen] = useState<boolean>(false);
+  const [isFaqOpen, setIsFaqOpen] = useState<boolean>(false);
+
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -63,6 +70,17 @@ const Community: React.FC = () => {
           }));
 
           setPosts(formattedPosts);
+
+          try {
+            setLoadingModerators(true);
+            const modsRes = await getModeratorsByCommunity(targetCommunityId);
+            const modsList = modsRes.data?.data || modsRes.data || [];
+            setModerators(modsList);
+          } catch (modErr) {
+            console.error("Error fetching moderators:", modErr);
+          } finally {
+            setLoadingModerators(false);
+          }
         }
       } catch (err) {
         console.error("Error fetching community or posts:", err);
@@ -123,6 +141,7 @@ const Community: React.FC = () => {
           </div>
         </div>
       )}
+
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden w-full">
         <div className="relative h-48 md:h-60 w-full bg-gradient-to-r from-indigo-500 to-violet-600">
           {communityDetail?.CoverPicture && (
@@ -161,7 +180,7 @@ const Community: React.FC = () => {
           </div>
           
           <div className="flex gap-2.5 shrink-0">
-          <button 
+            <button 
               onClick={handleJoin}
               disabled={isJoining || isJoined}
               className={`text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-2 ${
@@ -245,28 +264,112 @@ const Community: React.FC = () => {
             <h3 className="text-sm font-bold text-slate-900 tracking-tight pb-1">Resources</h3>
             
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer items-center text-slate-700 transition-colors border border-transparent hover:border-slate-100">
-                <div className="flex gap-2.5 items-center text-sm font-semibold">
-                  <GrNotes className="text-slate-400 text-sm" />
-                  <span>Peraturan</span>
+              <div className="flex flex-col">
+                <div 
+                  onClick={() => setIsRulesOpen(!isRulesOpen)}
+                  className="flex justify-between p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer items-center text-slate-700 transition-colors border border-transparent hover:border-slate-100"
+                >
+                  <div className="flex gap-2.5 items-center text-sm font-semibold">
+                    <GrNotes className="text-slate-400 text-sm" />
+                    <span>Peraturan</span>
+                  </div>
+                  <FaChevronDown className={`text-slate-400 text-xs transition-transform duration-200 ${isRulesOpen ? "rotate-180" : ""}`} />
                 </div>
-                <FaChevronDown className="text-slate-400 text-xs" />
+
+                {isRulesOpen && (
+                  <div className="flex flex-col gap-3 pt-2 pb-3 px-3">
+                    {communityDetail?.CommunityRules && communityDetail.CommunityRules.length > 0 ? (
+                      communityDetail.CommunityRules.map((rule, idx) => (
+                        <div key={rule.ID || idx} className="flex flex-col gap-0.5 text-xs border-b border-slate-100 last:border-0 pb-2 last:pb-0">
+                          <span className="font-bold text-slate-800">
+                            {idx + 1}. {rule.Title || "Aturan Komunitas"}
+                          </span>
+                          {rule.Description && (
+                            <p className="text-slate-500 font-medium leading-relaxed">
+                              {rule.Description}
+                            </p>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">Belum ada peraturan resmi.</span>
+                    )}
+                  </div>
+                )}
               </div>
               
-              <div className="flex justify-between p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer items-center text-slate-700 transition-colors border border-transparent hover:border-slate-100">
-                <div className="flex gap-2.5 items-center text-sm font-semibold">
-                  <RiTeamLine className="text-slate-400 text-base" />
-                  <span>Moderator</span>
+              <div className="flex flex-col">
+                <div 
+                  onClick={() => setIsModsOpen(!isModsOpen)}
+                  className="flex justify-between p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer items-center text-slate-700 transition-colors border border-transparent hover:border-slate-100"
+                >
+                  <div className="flex gap-2.5 items-center text-sm font-semibold">
+                    <RiTeamLine className="text-slate-400 text-base" />
+                    <span>Moderator</span>
+                  </div>
+                  <FaChevronDown className={`text-slate-400 text-xs transition-transform duration-200 ${isModsOpen ? "rotate-180" : ""}`} />
                 </div>
-                <FaChevronDown className="text-slate-400 text-xs" />
+
+                {isModsOpen && (
+                  <div className="flex flex-col gap-2 pt-2 pb-3 px-1">
+                    {loadingModerators ? (
+                      <span className="text-xs text-slate-400 px-2">Memuat moderator...</span>
+                    ) : moderators.length > 0 ? (
+                      moderators.map((mod) => (
+                        <div 
+                          key={mod.ID || mod.UserID}
+                          onClick={() => navigate(`/profile/${mod.UserID}`)}
+                          className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors"
+                        >
+                          {mod.ProfilePicture ? (
+                            <img
+                              className="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0"
+                              src={mod.ProfilePicture}
+                              alt={mod.Username}
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center shrink-0">
+                              <FaUser className="text-sm" />
+                            </div>
+                          )}
+
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-bold text-slate-900 text-sm truncate">
+                              {mod.Username || "Pengguna"}
+                            </span>
+                            {mod.SocialPoint !== undefined && (
+                              <div className="flex items-center gap-1 text-[11px] font-bold text-amber-600 mt-0.5">
+                                <FaStar className="text-amber-500 text-[10px]" />
+                                <span>{mod.SocialPoint} Poin</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-xs text-slate-400 italic px-2">Belum ada moderator terdaftar.</span>
+                    )}
+                  </div>
+                )}
               </div>
               
-              <div className="flex justify-between p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer items-center text-slate-700 transition-colors border border-transparent hover:border-slate-100">
-                <div className="flex gap-2.5 items-center text-sm font-semibold">
-                  <TbMessageCircleQuestion className="text-slate-400 text-base" />
-                  <span>FAQ</span>
+              <div className="flex flex-col">
+                <div 
+                  onClick={() => setIsFaqOpen(!isFaqOpen)}
+                  className="flex justify-between p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer items-center text-slate-700 transition-colors border border-transparent hover:border-slate-100"
+                >
+                  <div className="flex gap-2.5 items-center text-sm font-semibold">
+                    <TbMessageCircleQuestion className="text-slate-400 text-base" />
+                    <span>FAQ</span>
+                  </div>
+                  <FaChevronDown className={`text-slate-400 text-xs transition-transform duration-200 ${isFaqOpen ? "rotate-180" : ""}`} />
                 </div>
-                <FaChevronDown className="text-slate-400 text-xs" />
+
+                {isFaqOpen && (
+                  <div className="pt-2 pb-3 px-3 text-xs text-slate-500 font-medium leading-relaxed">
+                    Ajukan pertanyaan seputar grup ini di postingan publik atau hubungi moderator secara langsung.
+                  </div>
+                )}
               </div>
             </div>
           </div>

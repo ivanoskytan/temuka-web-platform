@@ -328,19 +328,25 @@ const Chat: React.FC = () => {
                               }`}
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
+                              {u.ProfilePicture ? (
                                 <img
-                                  src={u.ProfilePicture || "/assets/DefaultUser.png"}
+                                  src={u.ProfilePicture}
                                   alt={u.Username}
                                   className="w-8 h-8 rounded-full object-cover border border-slate-200 shrink-0"
                                 />
-                                <div className="flex flex-col min-w-0">
-                                  <span className="text-xs font-semibold text-slate-800 truncate">
-                                    {u.Username}
-                                  </span>
-                                  <span className="text-[10px] text-slate-400 truncate">
-                                    {u.Displayname || u.Email || `@${u.Username.toLowerCase()}`}
-                                  </span>
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center shrink-0">
+                                  <FaUser className="text-xs" />
                                 </div>
+                              )}
+                              <div className="flex flex-col min-w-0">
+                                <span className="text-xs font-semibold text-slate-800 truncate">
+                                  {u.Username}
+                                </span>
+                                <span className="text-[10px] text-slate-400 truncate">
+                                  {u.Displayname || u.Email || `@${u.Username.toLowerCase()}`}
+                                </span>
+                              </div>
                               </div>
                               {isSelected && (
                                 <div className="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center shrink-0">
@@ -416,11 +422,17 @@ const Chat: React.FC = () => {
                           : "hover:bg-slate-100 text-slate-700"
                       }`}
                     >
-                      <img
-                        src={item?.Avatar || item?.ProfilePicture || "/assets/DefaultUser.png"}
-                        alt="avatar"
-                        className="w-9 h-9 rounded-full object-cover border border-slate-200/60 shrink-0"
-                      />
+                      {item?.ProfilePicture ? (
+                        <img
+                          src={item?.ProfilePicture}
+                          alt="avatar"
+                          className="w-9 h-9 rounded-full object-cover border border-slate-200/60 shrink-0"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200/60 text-slate-400 flex items-center justify-center shrink-0">
+                          <FaUser className="text-xs" />
+                        </div>
+                      )}
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between">
                           <p className={`text-xs truncate ${isSelected ? "font-bold text-indigo-950" : "font-semibold text-slate-800"}`}>
