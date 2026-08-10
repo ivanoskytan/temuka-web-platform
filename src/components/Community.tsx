@@ -161,19 +161,23 @@ const Community: React.FC = () => {
           </div>
           
           <div className="flex gap-2.5 shrink-0">
-            <button 
+          <button 
               onClick={handleJoin}
-              disabled={isJoining}
-              className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-70 active:scale-[0.97] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm shadow-indigo-100 transition-all duration-150 flex items-center gap-2"
+              disabled={isJoining || isJoined}
+              className={`text-sm font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-2 ${
+                isJoined
+                  ? "bg-emerald-50 text-emerald-600 border border-emerald-200/80 cursor-default"
+                  : "bg-indigo-600 hover:bg-indigo-500 active:scale-[0.97] text-white shadow-indigo-100 disabled:opacity-70"
+              }`}
             >
-            {isJoining ? (
+              {isJoining ? (
                 <>
-                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>Proses...</span>
                 </>
               ) : isJoined ? (
                 <>
-                  <FaCheck className="text-xs" />
+                  <FaCheck className="text-xs animate-in zoom-in-50 duration-200" />
                   <span>Tergabung</span>
                 </>
               ) : (

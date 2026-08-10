@@ -33,6 +33,9 @@ export interface CommunityCardData {
   MembersCount: number;
   LogoPicture: string;
   CoverPicture: string;
+
+  isJoined?: boolean;
+  isJoining?: boolean;
 }
 
 export interface CommunityData {

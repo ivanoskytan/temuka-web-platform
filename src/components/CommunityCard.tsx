@@ -1,9 +1,24 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { CommunityCardData } from "../types";
-import { FaUserGroup } from "react-icons/fa6";
+import { FaUserGroup, FaCheck } from "react-icons/fa6";
 
-const CommunityCard: React.FC<CommunityCardData> = ({ ID, Name, Slug, Description, MembersCount, LogoPicture, CoverPicture }) => {
+interface CommunityCardProps extends CommunityCardData {
+  onJoin?: (communityId: number, communityName: string) => void;
+}
+
+const CommunityCard: React.FC<CommunityCardProps> = ({ 
+  ID, 
+  Name, 
+  Slug, 
+  Description, 
+  MembersCount, 
+  LogoPicture, 
+  CoverPicture,
+  isJoined=false,
+  isJoining=false,
+  onJoin 
+}) => {
   const navigate = useNavigate();
 
   const truncateText = (text: string): string => {
@@ -13,6 +28,8 @@ const CommunityCard: React.FC<CommunityCardData> = ({ ID, Name, Slug, Descriptio
 
   const handleJoinClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isJoined || isJoining || !onJoin) return;
+    onJoin(ID, Name);
   };
 
   return (
@@ -67,9 +84,26 @@ const CommunityCard: React.FC<CommunityCardData> = ({ ID, Name, Slug, Descriptio
           
           <button 
             onClick={handleJoinClick}
-            className="bg-indigo-600 hover:bg-indigo-500 active:scale-[0.97] text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm shadow-indigo-100 transition-all duration-150"
+            disabled={isJoined || isJoining}
+            className={`text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all duration-150 flex items-center gap-1.5 ${
+              isJoined 
+                ? "bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-default" 
+                : "bg-indigo-600 hover:bg-indigo-500 active:scale-[0.97] text-white shadow-indigo-100 disabled:opacity-70"
+            }`}
           >
-            Gabung
+            {isJoining ? (
+              <>
+                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <span>Proses...</span>
+              </>
+            ) : isJoined ? (
+              <>
+                <FaCheck className="text-xs" />
+                <span>Tergabung</span>
+              </>
+            ) : (
+              "Gabung"
+            )}
           </button>
         </div>
       </div>
