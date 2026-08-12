@@ -16,9 +16,18 @@ interface SearchBarProps {
   currentUserId?: string;
 }
 
+// Data shape returned by the backend
+interface CategorizedSuggestions {
+  Communities?: SuggestionItemData[];
+  Majors?: SuggestionItemData[];
+  Universities?: (SuggestionItemData | string)[];
+  Users?: SuggestionItemData[];
+  Posts?: SuggestionItemData[];
+}
+
 const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [suggestions, setSuggestions] = useState<SuggestionItemData[]>([]);
+  const [categorizedSuggestions, setCategorizedSuggestions] = useState<CategorizedSuggestions | null>(null);
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItemData[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
@@ -42,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
 
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setSuggestions([]);
+      setCategorizedSuggestions(null);
       if (isOpen) fetchHistory();
       return;
     }
@@ -54,19 +63,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
         const data = res?.data;
         
         if (data) {
-          const combined: SuggestionItemData[] = [
-            ...(data.Communities || []),
-            ...(data.Majors || []),
-            ...(data.Universities || []),
-            ...(data.Users || []),
-            ...(data.Posts || []),
-          ];
-          setSuggestions(combined);
+          setCategorizedSuggestions({
+            Communities: data.Communities || [],
+            Majors: data.Majors || [],
+            Universities: data.Universities || [],
+            Users: data.Users || [],
+            Posts: data.Posts || [],
+          });
         } else {
-          setSuggestions([]);
+          setCategorizedSuggestions(null);
         }
       } catch (err) {
         console.error('Failed to fetch suggestions:', err);
+        setCategorizedSuggestions(null);
       } finally {
         setIsLoadingSuggestions(false);
       }
@@ -100,17 +109,21 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
     }
   };
 
-  const handleSuggestionClick = async (item: SuggestionItemData) => {
+  const handleSuggestionClick = async (item: SuggestionItemData | string) => {
     setIsOpen(false);
-    const clickedQuery = item.Title || searchQuery;
+
+    const isString = typeof item === 'string';
+    const clickedQuery = isString ? item : (item.Title || searchQuery);
+    const entityId = isString ? undefined : item.ID;
+    const slug = isString ? undefined : item.Slug;
 
     if (currentUserId) {
       try {
         await recordSearchClick({
           userId: currentUserId,
           query: clickedQuery,
-          entityId: item.ID,
-          slug: item.Slug,
+          entityId,
+          slug,
         });
       } catch (err) {
         console.error('Failed to record search click:', err);
@@ -131,12 +144,59 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
     }
   };
 
+  // Helper to check if any categorized suggestions exist
+  const hasSuggestions = Boolean(
+    categorizedSuggestions && (
+      (categorizedSuggestions.Communities?.length ?? 0) > 0 ||
+      (categorizedSuggestions.Majors?.length ?? 0) > 0 ||
+      (categorizedSuggestions.Universities?.length ?? 0) > 0 ||
+      (categorizedSuggestions.Users?.length ?? 0) > 0 ||
+      (categorizedSuggestions.Posts?.length ?? 0) > 0
+    )
+  );
+
+  // Helper renderer for categorized sections
+  const renderCategorySection = (title: string, items?: (SuggestionItemData | string)[]) => {
+    if (!items || items.length === 0) return null;
+
+    return (
+      <div className="flex flex-col gap-1 my-1">
+        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-3 pt-2">
+          {title}
+        </span>
+        {items.map((item, idx) => {
+          const isString = typeof item === 'string';
+          const displayTitle = isString ? item : item.Title;
+          const iconUrl = !isString ? item.Icon : null;
+
+          return (
+            <div
+              key={!isString && item.ID ? item.ID : idx}
+              onClick={() => handleSuggestionClick(item)}
+              className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer rounded-xl transition-colors"
+            >
+              {iconUrl ? (
+                <img src={iconUrl} alt="" className="w-4 h-4 rounded-full object-cover shrink-0" />
+              ) : (
+                <FaSearch className="text-slate-400 text-xs shrink-0" />
+              )}
+              <span className="text-slate-700 font-medium text-sm truncate">
+                {displayTitle}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="relative w-full max-w-md mx-4" ref={searchContainerRef}>
+      {/* Search Input Box */}
       <div className="flex gap-2.5 bg-slate-100 rounded-xl px-4 py-2 w-full items-center focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-600 focus-within:shadow-xs transition-all border border-transparent focus-within:border-transparent">
         <FaSearch className="text-slate-400 text-sm shrink-0" />
         <input
-          type="search"
+          type="text" /* Changed from type="search" to prevent duplicate browser clear buttons */
           className="text-slate-800 font-medium text-sm w-full bg-transparent outline-none placeholder-slate-400"
           placeholder="Cari prodi, universitas, komunitas"
           value={searchQuery}
@@ -147,16 +207,18 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
           <button 
             type="button"
             onClick={() => setSearchQuery('')}
-            className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer shrink-0"
           >
             <FaXmark className="text-sm" />
           </button>
         )}
       </div>
 
+      {/* Dropdown Suggestions / History */}
       {isOpen && (
         <div className="absolute top-13 left-0 right-0 bg-white rounded-2xl p-2 shadow-xl border border-slate-100 flex flex-col gap-1 max-h-80 overflow-y-auto z-50 animate-in fade-in slide-in-from-top-2 duration-150">
           {!searchQuery.trim() ? (
+            /* Search History Section */
             <div className="p-2 flex flex-col gap-1">
               <div className="flex items-center justify-between px-2 py-1 mb-1">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -202,30 +264,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
               )}
             </div>
           ) : (
+            /* Categorized Suggestions Section */
             isLoadingSuggestions ? (
               <p className="text-xs text-slate-400 font-medium p-4 text-center">
                 Mencari saran...
               </p>
-            ) : suggestions?.length ? (
-              suggestions.map((item, idx) => (
-                <div
-                  key={item.ID || idx}
-                  onClick={() => handleSuggestionClick(item)}
-                  className="flex p-2.5 items-center gap-3 hover:bg-slate-50 cursor-pointer rounded-xl transition-colors"
-                >
-                  <FaSearch className="text-slate-400 text-xs shrink-0" />
-                  <div className="flex flex-col min-w-0">
-                    <p className="text-slate-700 font-semibold text-sm truncate">
-                      {item.Title}
-                    </p>
-                    {item.Type && (
-                      <span className="text-[10px] font-bold uppercase text-indigo-500 tracking-wider">
-                        {item.Type}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))
+            ) : hasSuggestions ? (
+              <div className="flex flex-col">
+                {renderCategorySection('Community', categorizedSuggestions?.Communities)}
+                {renderCategorySection('Major', categorizedSuggestions?.Majors)}
+                {renderCategorySection('University', categorizedSuggestions?.Universities)}
+                {renderCategorySection('User', categorizedSuggestions?.Users)}
+                {renderCategorySection('Post', categorizedSuggestions?.Posts)}
+              </div>
             ) : (
               <div className="p-8 text-center flex flex-col items-center justify-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100 shadow-inner">
