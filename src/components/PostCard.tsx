@@ -1,14 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { BiSolidUpvote, BiSolidDownvote } from "react-icons/bi";
+import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
 import { FaCommentDots, FaUser } from "react-icons/fa";
-import { MdSaveAlt } from "react-icons/md";
+import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import { Link, useNavigate } from 'react-router-dom';
 import { PostData, UserDetailData } from '../types';
 import { getUserDetail } from '../services/userService';
+import { likePost, unlikePost, savePost, unsavePost } from '../services/postService';
 
-const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upvote, Comments, CreatedAt }) => {
+interface PostCardProps extends PostData {
+  currentUserId?: number;
+}
+
+const PostCard: React.FC<PostCardProps> = ({
+  ID = 0,
+  UserID,
+  Title,
+  Description,
+  LikeCount = 0,
+  Comments,
+  CreatedAt,
+  IsLiked = false,
+  IsSaved = false,
+  currentUserId,
+}) => {
   const navigate = useNavigate();
   const [postUserdata, setPostUserdata] = useState<UserDetailData>();
+
+  const [likeCountState, setLikeCountState] = useState<number>(LikeCount);
+  const [isLiked, setIsLiked] = useState<boolean>(Boolean(IsLiked));
+  const [isSaved, setIsSaved] = useState<boolean>(Boolean(IsSaved));
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLikeCountState(LikeCount);
+  }, [LikeCount]);
+
+  useEffect(() => {
+    setIsLiked(Boolean(IsLiked));
+  }, [IsLiked]);
+
+  useEffect(() => {
+    setIsSaved(Boolean(IsSaved));
+  }, [IsSaved]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,7 +52,9 @@ const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upv
         console.error('Error fetching user data:', err);
       }
     };
-    fetchData();
+    if (UserID) {
+      fetchData();
+    }
   }, [UserID]);
 
   const getTimeAgo = (date: Date): string => {
@@ -45,20 +80,72 @@ const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upv
   };
 
   const truncateText = (text: string): string => {
+    if (!text) return '';
     if (text.length <= 160) return text;
     return text.substring(0, 160).trim() + "...";
   };
 
-  const handleUpvote = (e: React.MouseEvent) => {
+  const handleLikeToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isLoading) return;
+
+    setIsLoading(true);
+    const previousLiked = isLiked;
+    const previousCount = likeCountState;
+
+    if (isLiked) {
+      setIsLiked(false);
+      setLikeCountState(prev => Math.max(0, prev - 1));
+    } else {
+      setIsLiked(true);
+      setLikeCountState(prev => prev + 1);
+    }
+
+    try {
+      const payload = { user_id: currentUserId };
+      if (previousLiked) {
+        await unlikePost(payload, Number(ID));
+      } else {
+        await likePost(payload, Number(ID));
+      }
+    } catch (error) {
+      console.error('Error updating like status:', error);
+      setIsLiked(previousLiked);
+      setLikeCountState(previousCount);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDownvote = (e: React.MouseEvent) => {
+  const handleUnlike = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isLiked) {
+      handleLikeToggle(e);
+    }
   };
 
-  const handleSave = (e: React.MouseEvent) => {
+  const handleSaveToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isLoading || !currentUserId || !ID) return;
+
+    setIsLoading(true);
+    const previousSaved = isSaved;
+
+    setIsSaved(!previousSaved);
+
+    try {
+      const payload = { user_id: currentUserId };
+      if (previousSaved) {
+        await unsavePost(payload, Number(ID));
+      } else {
+        await savePost(payload, Number(ID));
+      }
+    } catch (error) {
+      console.error('Error updating save status:', error);
+      setIsSaved(previousSaved);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -68,22 +155,22 @@ const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upv
     >
       <div className="flex items-center gap-2">
         {postUserdata?.ProfilePicture ? (
-            <img
-              className="h-8 w-8 object-cover rounded-full bg-slate-100 ring-1 ring-slate-200"
-              src={postUserdata.ProfilePicture}
-              alt="profile"
-            />
-          ) : (
-            <div className="h-8 w-8 rounded-full bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center text-slate-400 shrink-0">
-              <FaUser className="text-sm" />
-            </div>
-          )}
+          <img
+            className="h-8 w-8 object-cover rounded-full bg-slate-100 ring-1 ring-slate-200"
+            src={postUserdata.ProfilePicture}
+            alt="profile"
+          />
+        ) : (
+          <div className="h-8 w-8 rounded-full bg-slate-100 ring-1 ring-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+            <FaUser className="text-sm" />
+          </div>
+        )}
         <Link 
           to={`/profile/${UserID}`}
           onClick={(e) => e.stopPropagation()}
           className='text-slate-800 text-sm font-bold hover:underline tracking-tight'
         >
-          {postUserdata?.Username}
+          {postUserdata?.Username || 'User'}
         </Link>
         <span className="text-slate-400 text-xs font-medium">
           • {getTimeAgo(CreatedAt)}
@@ -103,19 +190,26 @@ const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upv
         <div className="flex items-center gap-3">
           <div className="flex items-center bg-slate-100 rounded-xl px-1 py-0.5 border border-slate-200/40">
             <button 
-              onClick={handleUpvote}
-              className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-200/60 transition-colors"
+              onClick={handleLikeToggle}
+              disabled={isLoading}
+              title={isLiked ? "Unlike post" : "Like post"}
+              className={`p-1.5 rounded-lg transition-colors ${
+                isLiked 
+                  ? 'text-indigo-600 bg-indigo-50 hover:bg-indigo-100' 
+                  : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-200/60'
+              }`}
             >
-              <BiSolidUpvote className="text-lg" />
+              <BiSolidLike className="text-lg" />
             </button>
-            <span className="px-1 text-slate-700 font-bold text-xs">
-              {Array.isArray(Upvote) ? Upvote.length : 0}
+            <span className={`px-1 font-bold text-xs ${isLiked ? 'text-indigo-600' : 'text-slate-700'}`}>
+              {likeCountState}
             </span>
             <button 
-              onClick={handleDownvote}
+              onClick={handleUnlike}
+              disabled={isLoading}
               className="p-1.5 text-slate-500 hover:text-rose-600 rounded-lg hover:bg-slate-200/60 transition-colors"
             >
-              <BiSolidDownvote className="text-lg" />
+              <BiSolidDislike className="text-lg" />
             </button>
           </div>
 
@@ -126,10 +220,20 @@ const PostCard: React.FC<PostData> = ({ ID = '', UserID, Title, Description, Upv
         </div>
 
         <button 
-          onClick={handleSave}
-          className="p-2 text-slate-400 hover:text-amber-500 rounded-xl hover:bg-slate-100 transition-colors"
+          onClick={handleSaveToggle}
+          disabled={isLoading}
+          title={isSaved ? "Remove from saved" : "Save post"}
+          className={`p-2 rounded-xl transition-colors ${
+            isSaved 
+              ? 'text-amber-500 bg-amber-50 hover:bg-amber-100' 
+              : 'text-slate-400 hover:text-amber-500 hover:bg-slate-100'
+          }`}
         >
-          <MdSaveAlt className="text-xl" />
+          {isSaved ? (
+            <MdBookmark className="text-xl" />
+          ) : (
+            <MdBookmarkBorder className="text-xl" />
+          )}
         </button>
       </div>
     </div>

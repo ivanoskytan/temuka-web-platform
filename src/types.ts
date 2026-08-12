@@ -75,10 +75,12 @@ export interface PostData {
   Title: string;
   Description: string;
   Image?: string;
-  Upvote?: string[];
+  LikeCount?: number;
   Comments?: number;
   CreatedAt: Date;
   UpdatedAt: Date;
+  IsLiked?: boolean;
+  IsSaved?: boolean;
 }
 
 export interface PostCommentData {
@@ -104,7 +106,7 @@ export interface CommentData {
 }
 
 export interface UserDetailData {
-  ID?: string;
+  ID?: number;
   Username: string;
   Displayname?: string;
   Desc?: string;

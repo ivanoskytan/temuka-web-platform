@@ -32,10 +32,13 @@ const Feed: React.FC = () => {
           Title={p.Title}
           Description={p.Description}
           Image={p?.Image || ""}
-          Upvote={p.Upvote || []}
+          LikeCount={p.LikeCount || 0}
           Comments={p?.Comments}
           CreatedAt={p.CreatedAt || new Date()}
           UpdatedAt={p.UpdatedAt || new Date()}
+          currentUserId={user?.id}
+          IsLiked={p.IsLiked}
+          IsSaved={p.IsSaved}
         />
       ))}
     </div>

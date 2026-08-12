@@ -34,6 +34,33 @@ export async function likePost(payload: any, id: number) {
     return res.json();
 }
 
+export async function unlikePost(payload: any, id: number) {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/unlike/${id}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+    });
+    return res.json();
+}
+
+export async function savePost(payload: any, id: number) {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/save/${id}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+    });
+    return res.json();
+}
+
+export async function unsavePost(payload: any, id: number) {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/unsave/${id}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+    });
+    return res.json();
+}
+
 export async function deletePost(id: number) {
     const res = await fetch(`${API_SERVICE_KEY}/api/post/${id}`, {
         method: 'DELETE',

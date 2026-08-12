@@ -5,7 +5,7 @@ import { PostData, PostCommentData } from '../types';
 import { useNavigate, useParams } from 'react-router';
 import { getPostDetail } from '../services/postService';
 import { FaCircleChevronLeft } from "react-icons/fa6";
-import { BiSolidDownvote, BiSolidUpvote } from 'react-icons/bi';
+import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
 import { FaComment, FaUser } from "react-icons/fa";
 import useAuthStore from '../store/authStore';
 import { addComment } from '../services/commentService';
@@ -137,13 +137,13 @@ const Post: React.FC = () => {
 
             <div className="flex items-center bg-slate-100 rounded-xl px-1 py-0.5 border border-slate-200/40 w-max mb-8">
               <button className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-200/60 transition-colors">
-                <BiSolidUpvote className="text-lg" />
+                <BiSolidLike className="text-lg" />
               </button>
               <span className="px-1 text-slate-700 font-bold text-xs">
-                {Array.isArray(postData?.post?.Upvote) ? postData?.post?.Upvote.length : 0}
+                {Array.isArray(postData?.post?.LikeCount) ? postData?.post?.LikeCount : 0}
               </span>
               <button className="p-1.5 text-slate-500 hover:text-rose-600 rounded-lg hover:bg-slate-200/60 transition-colors">
-                <BiSolidDownvote className="text-lg" />
+                <BiSolidDislike className="text-lg" />
               </button>
             </div>
 
@@ -213,13 +213,13 @@ const Post: React.FC = () => {
                       <div className="flex items-center gap-4 text-slate-500">
                         <div className="flex items-center bg-slate-100 rounded-lg border border-slate-200/40">
                           <button className="p-1 text-slate-400 hover:text-indigo-600 rounded transition-colors">
-                            <BiSolidUpvote className="text-sm" />
+                            <BiSolidLike className="text-sm" />
                           </button>
                           <span className="px-1 text-slate-700 font-bold text-[11px]">
                             {comment.Votes || 0}
                           </span>
                           <button className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors">
-                            <BiSolidDownvote className="text-sm" />
+                            <BiSolidDislike className="text-sm" />
                           </button>
                         </div>
                         

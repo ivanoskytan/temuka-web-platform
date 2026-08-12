@@ -44,7 +44,6 @@ const Profile: React.FC = () => {
       setIsLoading(true);
 
       try {
-        // Fetch user basic info
         const userRes = await getUserDetail(targetUserId);
         setUserdata(userRes?.data || null);
 
@@ -263,10 +262,11 @@ const Profile: React.FC = () => {
                           Title={p.Title}
                           Description={p.Description}
                           Image={p?.Image || ""}
-                          Upvote={p.Upvote || []}
+                          LikeCount={p.LikeCount || 0}
                           Comments={p?.Comments}
                           CreatedAt={p.CreatedAt || new Date()}
                           UpdatedAt={p.UpdatedAt || new Date()}
+                          currentUserId={userdata?.ID}
                         />
                       ))
                     ) : (
