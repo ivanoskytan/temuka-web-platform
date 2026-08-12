@@ -212,13 +212,12 @@ export interface SuggestionItemData {
   Metadata?: Record<string, unknown>;
 }
 
-export interface SearchSuggestion {
-  Query: string;
-  Communities: SuggestionItemData[];
-  Majors: SuggestionItemData[];
-  Universities: SuggestionItemData[];
-  Users: SuggestionItemData[];
-  Posts: SuggestionItemData[];
+export interface CategorizedSuggestions {
+  Communities?: SuggestionItemData[];
+  Majors?: SuggestionItemData[];
+  Universities?: (SuggestionItemData | string)[];
+  Users?: SuggestionItemData[];
+  Posts?: SuggestionItemData[];
 }
 
 export interface SearchHistoryItemData {
@@ -254,5 +253,4 @@ export type GeneralUniversityListResponse = GeneralAPIResponse<UniversityData[]>
 export type GeneralMajorListResponse = GeneralAPIResponse<MajorData[]>;
 export type GeneralSearchUserResponse = GeneralAPIResponse<UserSearchItem[]>;
 export type GeneralUniversityReviewsResponse = GeneralAPIResponse<UniversityReview[]>;
-export type GeneralSearchSuggestResponse = GeneralAPIResponse<SearchSuggestion>;
 export type GeneralSearchHistoryResponse = GeneralAPIResponse<SearchHistory>;

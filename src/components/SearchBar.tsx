@@ -9,20 +9,12 @@ import {
 } from '../services/searchService'; 
 import { 
   SuggestionItemData, 
-  SearchHistoryItemData 
+  SearchHistoryItemData,
+  CategorizedSuggestions
 } from '../types';
 
 interface SearchBarProps {
   currentUserId?: string;
-}
-
-// Data shape returned by the backend
-interface CategorizedSuggestions {
-  Communities?: SuggestionItemData[];
-  Majors?: SuggestionItemData[];
-  Universities?: (SuggestionItemData | string)[];
-  Users?: SuggestionItemData[];
-  Posts?: SuggestionItemData[];
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
@@ -144,7 +136,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
     }
   };
 
-  // Helper to check if any categorized suggestions exist
   const hasSuggestions = Boolean(
     categorizedSuggestions && (
       (categorizedSuggestions.Communities?.length ?? 0) > 0 ||
@@ -155,7 +146,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
     )
   );
 
-  // Helper renderer for categorized sections
   const renderCategorySection = (title: string, items?: (SuggestionItemData | string)[]) => {
     if (!items || items.length === 0) return null;
 
@@ -192,11 +182,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
 
   return (
     <div className="relative w-full max-w-md mx-4" ref={searchContainerRef}>
-      {/* Search Input Box */}
       <div className="flex gap-2.5 bg-slate-100 rounded-xl px-4 py-2 w-full items-center focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-600 focus-within:shadow-xs transition-all border border-transparent focus-within:border-transparent">
         <FaSearch className="text-slate-400 text-sm shrink-0" />
         <input
-          type="text" /* Changed from type="search" to prevent duplicate browser clear buttons */
+          type="text" 
           className="text-slate-800 font-medium text-sm w-full bg-transparent outline-none placeholder-slate-400"
           placeholder="Cari prodi, universitas, komunitas"
           value={searchQuery}
@@ -214,11 +203,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
         )}
       </div>
 
-      {/* Dropdown Suggestions / History */}
       {isOpen && (
         <div className="absolute top-13 left-0 right-0 bg-white rounded-2xl p-2 shadow-xl border border-slate-100 flex flex-col gap-1 max-h-80 overflow-y-auto z-50 animate-in fade-in slide-in-from-top-2 duration-150">
           {!searchQuery.trim() ? (
-            /* Search History Section */
             <div className="p-2 flex flex-col gap-1">
               <div className="flex items-center justify-between px-2 py-1 mb-1">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -264,7 +251,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
               )}
             </div>
           ) : (
-            /* Categorized Suggestions Section */
             isLoadingSuggestions ? (
               <p className="text-xs text-slate-400 font-medium p-4 text-center">
                 Mencari saran...
