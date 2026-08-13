@@ -25,6 +25,14 @@ export async function getUserPosts(user_id: number) {
     return res.json();
 }
 
+export async function getSavedPostsByUser(user_id: number) {
+    const res = await fetch(`${API_SERVICE_KEY}/api/post/saved/${user_id}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+    return res.json();
+}
+
 export async function likePost(payload: any, id: number) {
     const res = await fetch(`${API_SERVICE_KEY}/api/post/like/${id}`, {
         method: 'POST',

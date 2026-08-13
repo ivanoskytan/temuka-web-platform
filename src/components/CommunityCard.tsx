@@ -79,7 +79,7 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
         <div className="flex justify-between items-center pt-2 border-t border-slate-100">
           <div className="flex gap-2 items-center text-slate-500">
             <FaUserGroup className="text-sm shrink-0" />
-            <span className="text-xs font-semibold">{MembersCount.toLocaleString('id-ID')} anggota</span>
+            <span className="text-xs font-semibold">{(MembersCount ?? 0).toLocaleString('id-ID')} anggota</span>
           </div>
           
           <button 

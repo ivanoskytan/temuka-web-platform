@@ -99,7 +99,7 @@ const Community: React.FC = () => {
       setIsJoining(true);
       const payload = { user_id: user?.id };
       await joinCommunity(payload, communityDetail.ID);
-      setCommunityDetail((prev) => prev ? {...prev, MemberCount: (prev.MemberCount || 0) + 1} : prev);
+      setCommunityDetail((prev) => prev ? {...prev, MembersCount: (prev.MembersCount || 0) + 1} : prev);
       setShowJoinModal(true);
       setIsJoined(true);
     } catch (err) {
@@ -242,7 +242,7 @@ const Community: React.FC = () => {
             <div className="flex gap-6 py-3 border-y border-slate-100 my-1">
               <div className="flex flex-col">
                 <span className="font-bold text-base text-slate-800 leading-none">
-                  {(communityDetail?.MemberCount || 0).toLocaleString('id-ID')}
+                  {(communityDetail?.MembersCount || 0).toLocaleString('id-ID')}
                 </span>
                 <span className="text-[11px] font-medium text-slate-400 mt-1">Pengikut</span>
               </div>

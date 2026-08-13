@@ -55,7 +55,7 @@ export interface CommunityData {
   Description: string;
   CommunityRules?: CommunityRule[];
   PostCount: number;
-  MemberCount: number;
+  MembersCount: number;
   LogoPicture: string;
   CoverPicture: string;
 }

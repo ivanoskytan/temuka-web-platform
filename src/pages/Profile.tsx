@@ -7,7 +7,7 @@ import CommunityCard from '../components/CommunityCard';
 import useAuthStore from '../store/authStore';
 import { getFileStorage } from '../services/index';
 import { getUserDetail } from '../services/userService';
-import { getUserPosts } from '../services/postService';
+import { getUserPosts, getSavedPostsByUser } from '../services/postService';
 import { getUserComments } from '../services/commentService';
 import { getUserJoinedCommunities } from '../services/communityService';
 import { UserDetailData, PostData, CommunityData } from '../types';
@@ -19,10 +19,11 @@ import {
   FaNewspaper, 
   FaComments, 
   FaUsers, 
+  FaBookmark,
   FaSpinner 
 } from 'react-icons/fa6';
 
-type TabType = 'posts' | 'comments' | 'communities';
+type TabType = 'posts' | 'comments' | 'communities' | 'saved';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +35,7 @@ const Profile: React.FC = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [comments, setComments] = useState<any[]>([]);
   const [communities, setCommunities] = useState<CommunityData[]>([]);
+  const [savedPosts, setSavedPosts] = useState<PostData[]>([]);
 
   const [activeTab, setActiveTab] = useState<TabType>('posts');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -55,6 +57,9 @@ const Profile: React.FC = () => {
 
         const commsRes = await getUserJoinedCommunities({ user_id: targetUserId });
         setCommunities(commsRes?.data || commsRes || []);
+
+        const savedRes = await getSavedPostsByUser(targetUserId);
+        setSavedPosts(savedRes?.data || savedRes || []);
       } catch (err) {
         console.error('Failed to fetch profile data:', err);
       } finally {
@@ -242,8 +247,30 @@ const Profile: React.FC = () => {
                   {communities.length}
                 </span>
               </button>
+
+              <button
+                onClick={() => setActiveTab('saved')}
+                className={`pb-3 px-4 text-sm font-bold tracking-tight border-b-2 transition-all shrink-0 flex items-center gap-2 cursor-pointer ${
+                  activeTab === 'saved'
+                    ? 'border-indigo-600 text-indigo-600 font-extrabold'
+                    : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                }`}
+              >
+                <FaBookmark className="text-sm" />
+                <span>Disimpan</span>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] ${
+                    activeTab === 'saved'
+                      ? 'bg-indigo-100 text-indigo-700'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {savedPosts.length}
+                </span>
+              </button>
             </div>
 
+            {/* Content Container */}
             <div className="flex flex-col gap-4">
               {isLoading ? (
                 <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center flex flex-col items-center justify-center gap-3 text-slate-400">
@@ -312,14 +339,41 @@ const Profile: React.FC = () => {
                             Slug={u.Slug}
                             Description={u.Description}
                             LogoPicture={u.LogoPicture}
-                            MembersCount={u.MemberCount}
+                            MembersCount={u.MembersCount}
                             CoverPicture={u.CoverPicture}
+                            isJoined={true}
                           />
                         ))}
                       </div>
                     ) : (
                       <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center text-slate-400 font-medium text-xs">
                         Belum bergabung dengan komunitas manapun.
+                      </div>
+                    )
+                  )}
+
+                  {activeTab === 'saved' && (
+                    savedPosts.length > 0 ? (
+                      savedPosts.map((p) => (
+                        <PostCard
+                          key={p.ID || Math.random().toString()}
+                          ID={p.ID || ""}
+                          UserID={p.UserID}
+                          Title={p.Title}
+                          Description={p.Description}
+                          Image={p?.Image || ""}
+                          LikeCount={p.LikeCount || 0}
+                          Comments={p?.Comments}
+                          CreatedAt={p.CreatedAt || new Date()}
+                          UpdatedAt={p.UpdatedAt || new Date()}
+                          currentUserId={userdata?.ID}
+                          IsSaved={true}
+                          IsLiked={p.IsLiked || false}
+                        />
+                      ))
+                    ) : (
+                      <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center text-slate-400 font-medium text-xs">
+                        Belum ada postingan yang disimpan.
                       </div>
                     )
                   )}
