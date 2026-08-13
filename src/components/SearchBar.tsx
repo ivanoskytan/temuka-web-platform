@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router';
 import { FaClock, FaXmark, FaTrashCan } from 'react-icons/fa6';
 import { FaSearch } from 'react-icons/fa';
 import { 
@@ -26,6 +27,27 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState<boolean>(false);
   
   const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  const navigate = useNavigate();
+
+  const getNavigationPath = (item: SuggestionItemData) : string => {
+    const type = item.Type?.toLowerCase();
+    const id = item.ID;
+    const slug = item.Slug?.toLowerCase();
+
+    switch (type) {
+      case 'community':
+        return `/community/${slug}`;
+      case 'post':
+        return `/post/${id}`;
+      case 'user':
+        return `/profile/${id}`;
+      case 'major':
+        return `/majors/${id}`;
+      default:
+        return '';
+    }
+  }; 
 
   const fetchHistory = async () => {
     if (!currentUserId) return;
@@ -101,7 +123,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
     }
   };
 
-  const handleSuggestionClick = async (item: SuggestionItemData | string) => {
+  const handleSuggestionClick = async (item: SuggestionItemData) => {
     setIsOpen(false);
 
     const isString = typeof item === 'string';
@@ -122,6 +144,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
       }
     }
     setSearchQuery('');
+    navigate(getNavigationPath(item));
   };
 
   const handleClearAllHistory = async (e: React.MouseEvent) => {
@@ -162,7 +185,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ currentUserId }) => {
           return (
             <div
               key={!isString && item.ID ? item.ID : idx}
-              onClick={() => handleSuggestionClick(item)}
+              onClick={() => handleSuggestionClick(item as SuggestionItemData)}
               className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer rounded-xl transition-colors"
             >
               {iconUrl ? (
