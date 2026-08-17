@@ -46,7 +46,7 @@ const CommunityCreateForm: React.FC = () => {
           content: base64Content,
         });
 
-        const fileUrl = response?.url || response?.data?.url || response?.file_url;
+        const fileUrl = response?.url;
         if (type === 'logo') setLogoPicture(fileUrl);
         if (type === 'cover') setCoverPicture(fileUrl);
       } catch (err) {

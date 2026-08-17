@@ -1,7 +1,7 @@
 import { API_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function createCommunity(payload: any) {
-    const res = await fetch(`${API_SERVICE_KEY}/api/community/create`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/community`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
