@@ -90,6 +90,7 @@ export interface PostCommentData {
   PostID: number;
   Content: string;
   Votes: number;
+  ProfilePicture: string;
   CreatedAt: Date;
   UpdatedAt: Date;
 }

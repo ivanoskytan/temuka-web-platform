@@ -192,11 +192,17 @@ const Post: React.FC = () => {
                 {postData?.comments?.map((comment, index) => (
                   <div key={comment.ID || index} className="flex flex-col gap-1.5">
                     <div className="flex items-center gap-2">
+                      {comment.ProfilePicture ? (
                       <img 
-                        src="/assets/DefaultUser.png" 
+                        src={comment.ProfilePicture}
                         alt="Komentator" 
                         className="w-6 h-6 rounded-full ring-1 ring-slate-200"
                       />
+                      ): (
+                        <div className="w-6 h-6 rounded-full ring-1 ring-slate-200">
+                          <FaUser className="text-sm" />
+                        </div>
+                      )}
                       <span className="text-xs font-bold text-slate-800 tracking-tight">
                         {comment.Username}
                       </span>

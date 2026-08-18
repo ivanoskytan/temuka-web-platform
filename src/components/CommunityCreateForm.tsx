@@ -23,7 +23,7 @@ const CommunityCreateForm: React.FC = () => {
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [message, setMessage] = useState({ type: '', message: ''});
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -31,31 +31,25 @@ const CommunityCreateForm: React.FC = () => {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    try {
+      if (type === 'logo') setIsUploadingLogo(true);
+      if (type === 'cover') setIsUploadingCover(true);
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = async () => {
-      const base64Content = reader.result as string;
+      const response = await uploadFile(file);
 
-      try {
-        if (type === 'logo') setIsUploadingLogo(true);
-        if (type === 'cover') setIsUploadingCover(true);
-
-        const response = await uploadFile({
-          file_name: file.name,
-          content: base64Content,
-        });
-
-        const fileUrl = response?.url;
-        if (type === 'logo') setLogoPicture(fileUrl);
-        if (type === 'cover') setCoverPicture(fileUrl);
-      } catch (err) {
-        console.error(`Failed to upload ${type}:`, err);
-      } finally {
-        if (type === 'logo') setIsUploadingLogo(false);
-        if (type === 'cover') setIsUploadingCover(false);
-      }
-    };
+      const fileUrl = response?.url;
+      if (type === 'logo') setLogoPicture(fileUrl);
+      if (type === 'cover') setCoverPicture(fileUrl);
+    } catch (err) {
+      console.error(`Failed to upload ${type}:`, err);
+      setMessage({
+        type: 'error',
+        message: `Gagal mengunggah ${type}. Silakan coba lagi.`,
+      })
+    } finally {
+      if (type === 'logo') setIsUploadingLogo(false);
+      if (type === 'cover') setIsUploadingCover(false);
+    }
   };
 
   const handleAddRule = () => {
@@ -76,8 +70,6 @@ const CommunityCreateForm: React.FC = () => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    setErrorMessage('');
-
     const payload = {
       user_id: user?.id ? Number(user.id) : 0,
       name: name.trim(),
@@ -91,15 +83,24 @@ const CommunityCreateForm: React.FC = () => {
       setIsSubmitting(true);
       const res = await createCommunity(payload);
 
-      if (res?.error || res?.message) {
-        setErrorMessage(res.error || res.message);
+      if (res?.error) {
+        setMessage({
+          type: 'error',
+          message: res.message,
+        });
         return;
-      }
-
+      } 
+      setMessage({
+        type: 'success',
+        message: res.message || 'Community created successfully!',
+      });
       navigate('/');
     } catch (err: any) {
       console.error('Failed to create community:', err);
-      setErrorMessage('Terjadi kesalahan saat membuat komunitas.');
+      setMessage({
+        type: 'error',
+        message: "Terjadi kesalahan saat membuat komunitas."
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -140,11 +141,17 @@ const CommunityCreateForm: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
-          {errorMessage && (
-            <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
-              {errorMessage}
-            </div>
-          )}
+        {message.message && (
+          <div
+            className={`p-4 border rounded-xl text-sm font-medium ${
+              message.type === 'error'
+                ? 'bg-red-50 border-red-200 text-red-600'
+                : 'bg-green-50 border-green-200 text-green-600'
+            }`}
+          >
+            {message.message}
+          </div>
+        )}
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">

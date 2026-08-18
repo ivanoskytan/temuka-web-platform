@@ -61,9 +61,7 @@ const Settings: React.FC = () => {
 
     try {
       if (profilePictureFile) {
-        const formData = new FormData();
-        formData.append('file', profilePictureFile);
-        await uploadFile(formData);
+        await uploadFile(profilePictureFile);
         updatedPayload.ProfilePicture = profilePictureFile.name;
       }
 

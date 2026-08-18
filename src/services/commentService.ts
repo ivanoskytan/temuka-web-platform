@@ -1,7 +1,7 @@
 import { API_SERVICE_KEY, getAuthHeaders } from ".";
 
 export async function addComment(payload: any) {
-    const res = await fetch(`${API_SERVICE_KEY}/api/comment/add`, {
+    const res = await fetch(`${API_SERVICE_KEY}/api/comment`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
