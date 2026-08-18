@@ -23,6 +23,9 @@ jobs:
             --resource-group temuka \
             --image temuka-web-platform:${{ github.sha }} \
             --image temuka-web-platform:latest \
+            --build-arg REACT_APP_API_SERVICE="https://temuka-main-api.nicebush-b3e89bd2.centralindia.azurecontainerapps.io" \
+            --build-arg REACT_APP_WEBSOCKET_SERVICE="wss://temuka-main-api.nicebush-b3e89bd2.centralindia.azurecontainerapps.io" \
+            --build-arg REACT_APP_INSIGHT_SERVICE="https://temuka-insight.nicebush-b3e89bd2.centralindia.azurecontainerapps.io" \
             .
 
       - name: Deploy to Azure Container App
